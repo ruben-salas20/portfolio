@@ -1,0 +1,63 @@
+---
+/**
+ * ProjectCard — tarjeta individual de proyecto.
+ * Toda la tarjeta es un enlace al repositorio en GitHub.
+ */
+import type { Project } from '../data/projects';
+import type { Lang } from '../i18n/ui';
+
+interface Props {
+  project: Project;
+  lang: Lang;
+  index: number;
+  viewRepoLabel: string;
+}
+const { project, lang, index, viewRepoLabel } = Astro.props;
+const url = `https://github.com/ruben-salas20/${project.repo}`;
+---
+
+<a
+  href={url}
+  target="_blank"
+  rel="noopener noreferrer"
+  class="group block border border-line bg-surface/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/55 hover:bg-surface"
+>
+  <div class="flex items-baseline justify-between gap-4">
+    <div class="flex items-baseline gap-3">
+      <span class="font-mono text-xs text-faint">/{String(index + 1).padStart(2, '0')}</span>
+      <h3 class="font-display text-xl text-ink transition-colors group-hover:text-accent">
+        {project.name}
+      </h3>
+      {
+        project.status && (
+          <span class="border border-line px-2 py-0.5 font-mono text-[10px] text-prompt">
+            {project.status[lang]}
+          </span>
+        )
+      }
+    </div>
+    <span class="shrink-0 font-mono text-xs text-faint">{project.year}</span>
+  </div>
+
+  <p class="mt-3 max-w-[58ch] text-sm leading-relaxed text-muted">
+    {project.desc[lang]}
+  </p>
+
+  <div class="mt-4 flex flex-wrap gap-2">
+    {
+      project.stack.map((tech) => (
+        <span class="font-mono text-[11px] text-faint">{tech}</span>
+      ))
+    }
+  </div>
+
+  <span
+    class="mt-5 inline-flex items-center gap-1.5 font-mono text-xs text-accent"
+  >
+    {viewRepoLabel}
+    <span
+      class="transition-transform duration-300 group-hover:translate-x-1"
+      aria-hidden="true">→</span
+    >
+  </span>
+</a>

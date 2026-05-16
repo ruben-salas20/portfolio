@@ -1,0 +1,120 @@
+@import "tailwindcss";
+
+/* ============================================================
+   DESIGN TOKENS — el "ADN" visual del portafolio.
+   En Tailwind v4 los tokens se declaran aquí, en @theme.
+   Cada variable genera utilidades automáticas:
+   --color-accent  ->  bg-accent / text-accent / border-accent
+   ============================================================ */
+@theme {
+  /* Superficies (de más oscuro a más claro) */
+  --color-base: #14161b;
+  --color-surface: #1a1d24;
+  --color-elevated: #21252e;
+  --color-line: #2b303b;
+
+  /* Texto (de más fuerte a más tenue) */
+  --color-ink: #e9ebf1;
+  --color-muted: #9aa1b2;
+  --color-faint: #686f80;
+
+  /* Acentos */
+  --color-accent: #88c0d0;   /* frost — enlaces, hover, foco */
+  --color-prompt: #a3be8c;   /* aurora green — prompts de terminal */
+
+  /* Tipografía */
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-sans: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+}
+
+/* ============================================================
+   BASE — estilos globales sobre los elementos HTML.
+   ============================================================ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 2rem;
+  }
+
+  body {
+    background-color: var(--color-base);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-accent);
+    color: var(--color-base);
+  }
+
+  /* Scrollbar discreta, acorde a la estética */
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--color-base); }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-line);
+    border-radius: 999px;
+    border: 2px solid var(--color-base);
+  }
+  ::-webkit-scrollbar-thumb:hover { background: var(--color-faint); }
+}
+
+/* ============================================================
+   UTILIDADES PERSONALIZADAS — animaciones y detalles.
+   ============================================================ */
+@layer utilities {
+  /* Reveal en carga de página (con stagger vía animation-delay) */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fade-up {
+    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Reveal al hacer scroll (lo activa un IntersectionObserver en Layout) */
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Cursor de terminal parpadeante */
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .cursor-blink { animation: blink 1.15s step-end infinite; }
+
+  /* Estado activo de la navegación (scroll-spy) */
+  .nav-active .nav-index { color: var(--color-accent); }
+  .nav-active .nav-label { color: var(--color-ink); }
+  .nav-active .nav-bar   { width: 1.5rem; background: var(--color-accent); }
+
+  /* Subrayado animado para enlaces de texto */
+  .link-underline {
+    background-image: linear-gradient(var(--color-accent), var(--color-accent));
+    background-size: 0% 1px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .link-underline:hover { background-size: 100% 1px; }
+}
+
+/* Respeta a quien desactiva animaciones en su sistema (accesibilidad) */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .animate-fade-up,
+  .reveal {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .cursor-blink { animation: none !important; }
+}

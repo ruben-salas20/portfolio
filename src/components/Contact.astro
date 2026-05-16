@@ -1,0 +1,52 @@
+---
+/**
+ * Contact — sección final + pie de página.
+ */
+import { t, contactInfo, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+---
+
+<section id="contact" class="reveal border-t border-line py-20 lg:py-24">
+  <p class="font-mono text-xs tracking-[0.2em] text-accent">{tr.contact.kicker}</p>
+  <h2
+    class="mt-4 max-w-[16ch] font-display text-3xl font-medium text-ink sm:text-5xl"
+  >
+    {tr.contact.title}
+  </h2>
+  <p class="mt-5 max-w-[52ch] leading-relaxed text-muted">{tr.contact.lead}</p>
+
+  <div class="mt-9 flex flex-col gap-px border-t border-line">
+    <a
+      href={`mailto:${contactInfo.email}`}
+      class="group flex items-center justify-between gap-4 border-b border-line py-4 transition-colors hover:text-accent"
+    >
+      <span class="font-mono text-xs text-faint">{tr.contact.emailLabel}</span>
+      <span class="text-sm text-ink transition-colors group-hover:text-accent">
+        {contactInfo.email}
+        <span class="ml-1 inline-block transition-transform group-hover:translate-x-1">→</span>
+      </span>
+    </a>
+    <a
+      href={contactInfo.github}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="group flex items-center justify-between gap-4 border-b border-line py-4 transition-colors hover:text-accent"
+    >
+      <span class="font-mono text-xs text-faint">{tr.contact.githubLabel}</span>
+      <span class="text-sm text-ink transition-colors group-hover:text-accent">
+        @{contactInfo.githubUser}
+        <span class="ml-1 inline-block transition-transform group-hover:translate-x-1">↗</span>
+      </span>
+    </a>
+  </div>
+
+  <footer class="mt-14 flex flex-col gap-1 font-mono text-[11px] text-faint">
+    <span>{tr.footer.year}</span>
+    <span>{tr.footer.built}</span>
+  </footer>
+</section>

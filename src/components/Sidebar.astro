@@ -1,0 +1,113 @@
+---
+/**
+ * Sidebar — barra lateral fija (estilo "Danny portfolio").
+ * En escritorio queda fija a la izquierda; en móvil se vuelve
+ * una cabecera apilada arriba del contenido.
+ */
+import { t, contactInfo, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+
+// Items de navegación: cada uno apunta a una sección de la página.
+const navItems = [
+  { id: 'home', label: tr.nav.home },
+  { id: 'about', label: tr.nav.about },
+  { id: 'skills', label: tr.nav.skills },
+  { id: 'work', label: tr.nav.work },
+  { id: 'contact', label: tr.nav.contact },
+];
+
+// El toggle de idioma apunta a la misma página en el otro idioma.
+const isEs = lang === 'es';
+---
+
+<aside
+  class="flex flex-col gap-10 border-b border-line bg-surface/50 px-7 py-8 backdrop-blur-sm lg:fixed lg:inset-y-0 lg:left-0 lg:w-[270px] lg:justify-between lg:gap-0 lg:border-r lg:border-b-0"
+>
+  <!-- Marca: monograma + nombre + rol -->
+  <div class="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
+    <a href={isEs ? '/es/' : '/'} class="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
+      <span
+        class="grid h-11 w-11 place-items-center border border-line bg-elevated font-mono text-sm font-medium text-accent"
+      >
+        rs
+      </span>
+      <div>
+        <p class="font-display text-xl leading-none text-ink">Ruben Salas</p>
+        <p class="mt-1.5 font-mono text-[11px] tracking-wide text-faint">
+          {tr.sidebar.role}
+        </p>
+      </div>
+    </a>
+  </div>
+
+  <!-- Navegación principal -->
+  <nav class="flex flex-wrap gap-x-6 gap-y-2 lg:flex-col lg:gap-0">
+    {
+      navItems.map((item, i) => (
+        <a
+          href={`#${item.id}`}
+          data-nav
+          class="group flex items-center gap-3 py-1.5 transition-colors lg:py-2.5"
+        >
+          <span class="nav-bar h-px w-2 bg-faint transition-all duration-300 group-hover:w-5 group-hover:bg-accent" />
+          <span class="nav-index font-mono text-[11px] text-faint transition-colors">
+            0{i + 1}
+          </span>
+          <span class="nav-label text-sm text-muted transition-colors group-hover:text-ink">
+            {item.label}
+          </span>
+        </a>
+      ))
+    }
+  </nav>
+
+  <!-- Pie de la sidebar: estado, idioma, enlaces -->
+  <div class="flex flex-col gap-5">
+    <!-- Estado de disponibilidad -->
+    <div class="flex items-center gap-2.5">
+      <span class="relative flex h-2 w-2">
+        <span
+          class="absolute inline-flex h-full w-full animate-ping rounded-full bg-prompt opacity-60"
+        ></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-prompt"></span>
+      </span>
+      <span class="font-mono text-[11px] text-muted">{tr.sidebar.available}</span>
+    </div>
+
+    <div class="flex items-center justify-between">
+      <!-- Enlace al código fuente -->
+      <a
+        href={contactInfo.github}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="font-mono text-[11px] text-faint transition-colors hover:text-accent"
+      >
+        GitHub ↗
+      </a>
+
+      <!-- Toggle de idioma EN / ES -->
+      <div class="flex items-center gap-1 font-mono text-[11px]">
+        <a
+          href="/"
+          class={`px-1 transition-colors ${lang === 'en' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+        >
+          EN
+        </a>
+        <span class="text-line">/</span>
+        <a
+          href="/es/"
+          class={`px-1 transition-colors ${lang === 'es' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+        >
+          ES
+        </a>
+      </div>
+    </div>
+
+    <p class="hidden font-mono text-[10px] text-faint lg:block">{tr.footer.year}</p>
+  </div>
+</aside>

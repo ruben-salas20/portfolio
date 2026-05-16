@@ -11,6 +11,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+dev-server.log
+
+# archivos personales privados — NUNCA publicar
+ABOUT_ME.md
 
 
 # environment variables

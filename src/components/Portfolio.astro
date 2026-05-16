@@ -1,0 +1,35 @@
+---
+/**
+ * Portfolio — ensambla la página completa.
+ * Existe para NO repetir esta estructura en cada idioma:
+ * las páginas (en / es) solo hacen <Portfolio lang="..." />.
+ */
+import Layout from '../layouts/Layout.astro';
+import Sidebar from './Sidebar.astro';
+import Hero from './Hero.astro';
+import About from './About.astro';
+import Skills from './Skills.astro';
+import Projects from './Projects.astro';
+import Contact from './Contact.astro';
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+---
+
+<Layout title={tr.meta.title} description={tr.meta.description} lang={lang}>
+  <Sidebar lang={lang} />
+
+  <main class="lg:ml-[270px]">
+    <div class="mx-auto max-w-[760px] px-7 sm:px-10 lg:px-16">
+      <Hero lang={lang} />
+      <About lang={lang} />
+      <Skills lang={lang} />
+      <Projects lang={lang} />
+      <Contact lang={lang} />
+    </div>
+  </main>
+</Layout>
