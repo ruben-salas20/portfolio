@@ -33,6 +33,21 @@ Cambiar qué idioma va en la raíz toca cinco sitios a la vez, y olvidar uno dej
 
 `src/pages/llms.txt.ts` es un endpoint estático que genera el resumen del sitio para modelos de lenguaje ([formato llmstxt.org](https://llmstxt.org)). **Se construye a partir de `i18n/ui.ts`, `data/projects.ts` y `data/skills.ts`**, así que no hay que mantenerlo a mano: añadir un proyecto o cambiar un texto lo actualiza solo. Usa `Astro.site` (definido como `https://rubensalas.dev` en la config) para las URLs absolutas.
 
+### SEO y metadatos
+
+Todo el `<head>` se genera en `src/layouts/Layout.astro` a partir de `Astro.site`: canonical, los tres `hreflang` (`es`, `en`, `x-default`), Open Graph, Twitter Card y el JSON-LD de `Person`. **`site` en `astro.config.mjs` lleva `www`** — el apex `rubensalas.dev` redirige a `www.rubensalas.dev`, así que ese es el host canónico; ponerlo sin `www` propaga el host equivocado a todas las URLs absolutas del sitio, incluido `/llms.txt`.
+
+`@astrojs/sitemap` genera `/sitemap-index.xml` leyendo el bloque `i18n`; el stub de redirect `/es/` queda fuera del sitemap por sí solo. `public/robots.txt` lo referencia y permite el rastreo a todos los crawlers, incluidos los de IA, a propósito.
+
+Los iconos de `public/` (`favicon.svg`, `favicon.ico`, `apple-touch-icon.png`) y `og-image.png` se generaron rasterizando HTML/SVG con Edge en headless. Si hay que rehacerlos, **usa `--headless=new`**: el headless antiguo renderiza mal el SVG, y Windows clampa las ventanas por debajo de ~200 px, así que hay que renderizar grande y no pedir tamaños pequeños directamente.
+
+### Deuda conocida
+
+Auditoría Lighthouse (agosto 2026): 100 en accesibilidad, buenas prácticas y SEO; performance 94 escritorio / 85 móvil. Dos cosas sin resolver:
+
+- **`--color-faint` (#686f80) sobre `--color-base` da 3.60:1 y no cumple WCAG AA** (mínimo 4.5:1). Las herramientas automáticas no lo detectan porque el fondo translúcido con `backdrop-blur` de la sidebar les impide resolver un color sólido. Afecta a texto de 10-12 px que sí se lee: rol, índices de nav, tags de proyecto, pie.
+- **Google Fonts bloquea el render** ~2 s en móvil. Autoalojar las tres fuentes es la mejora de mayor retorno para el score de performance.
+
 ## Despliegue
 
 El sitio se publica en Vercel **desde `origin/main` en GitHub**. Vercel no ve el árbol de trabajo local: un cambio no llega a producción hasta que está commiteado *y* pusheado. Si el usuario dice que no ve sus cambios en el sitio, comprueba primero `git status` y si `git rev-parse HEAD` coincide con `git ls-remote origin refs/heads/main`.
