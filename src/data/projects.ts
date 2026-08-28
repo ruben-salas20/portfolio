@@ -45,8 +45,8 @@ export const projects: Project[] = [
     year: '2026',
     stack: ['Python', 'Flask', 'SQLite', 'Playwright', 'LLM tool-calling'],
     desc: {
-      en: 'The internal logistics and finance platform running in production for our family dropshipping store, which operates in Guatemala. It reconciles shipment tracking across systems, creates shipping labels end to end in a third-party ERP through a browser bot with an AI address validator, keeps the financial ledger, and answers questions about its own data through a conversational assistant with tool-calling.',
-      es: 'La plataforma interna de logística y finanzas que corre en producción para la tienda de dropshipping de mi familia, que opera en Guatemala. Reconcilia el estado de los envíos entre sistemas, crea guías de transporte de extremo a extremo en un ERP externo mediante un bot de navegador con validación de direcciones por IA, lleva el libro financiero y responde preguntas sobre sus propios datos a través de un asistente conversacional con tool-calling.',
+      en: 'The internal logistics and finance platform running in production for our family dropshipping store, which operates in Guatemala. It reconciles shipment tracking across systems, creates shipping labels end to end in a third-party ERP through a browser bot with an AI address validator, keeps the financial ledger, and answers questions about its own data through a conversational assistant with tool-calling. It has been running the daily operation of the store — around 30 orders a day — since 2026.',
+      es: 'La plataforma interna de logística y finanzas que corre en producción para la tienda de dropshipping de mi familia, que opera en Guatemala. Reconcilia el estado de los envíos entre sistemas, crea guías de transporte de extremo a extremo en un ERP externo mediante un bot de navegador con validación de direcciones por IA, lleva el libro financiero y responde preguntas sobre sus propios datos a través de un asistente conversacional con tool-calling. Sostiene la operación diaria de la tienda —unos 30 pedidos al día— desde 2026.',
     },
   },
 ];
