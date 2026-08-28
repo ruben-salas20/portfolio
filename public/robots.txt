@@ -1,0 +1,45 @@
+# Portafolio de Rubén Salas — se permite el rastreo completo, a propósito.
+# El objetivo del sitio es ser encontrado y citado, así que no se bloquea
+# ningún crawler, tampoco los de entrenamiento de modelos: bloquearlos no
+# mejora la citación (son mecanismos distintos) y aquí no hay nada que
+# proteger. Los agentes de IA van listados explícitamente porque algunos
+# han interpretado el comodín de forma inconsistente.
+
+User-agent: *
+Allow: /
+
+# Buscadores generativos y agentes de IA
+User-agent: GPTBot
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+Sitemap: https://www.rubensalas.dev/sitemap-index.xml

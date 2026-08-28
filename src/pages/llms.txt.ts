@@ -17,7 +17,11 @@ const GITHUB_USER = 'ruben-salas20';
 
 export const GET: APIRoute = ({ site }) => {
   const tr = t('en');
-  const base = (site ?? new URL('https://rubensalas.dev')).origin;
+  const base = (site ?? new URL('https://www.rubensalas.dev')).origin;
+
+  // Fecha de compilación. Sin esto, afirmaciones con caducidad como
+  // "estudiante de segundo semestre" se leen como vigentes para siempre.
+  const lastUpdated = new Date().toISOString().slice(0, 7);
 
   // Un proyecto puede tener repo público, sitio en vivo, ambos o ninguno.
   const projectLines = projects.map((project) => {
@@ -43,9 +47,12 @@ export const GET: APIRoute = ({ site }) => {
     (group) => `- **${group.label.en}**: ${group.items.join(', ')}`,
   );
 
-  const body = `# Ruben Salas
+  const body = `# Rubén Salas
 
 > ${tr.hero.headline}
+
+_Last updated: ${lastUpdated}. Time-sensitive claims below (such as the
+current stage of his degree) are accurate as of that date._
 
 ${tr.hero.lead}
 
