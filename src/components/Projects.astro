@@ -31,12 +31,7 @@ const tr = t(lang);
   <div class="mt-9 grid gap-4">
     {
       projects.map((project, i) => (
-        <ProjectCard
-          project={project}
-          lang={lang}
-          index={i}
-          viewRepoLabel={tr.work.viewRepo}
-        />
+        <ProjectCard project={project} lang={lang} index={i} />
       ))
     }
   </div>

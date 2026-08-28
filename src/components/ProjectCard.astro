@@ -1,33 +1,51 @@
 ---
 /**
  * ProjectCard — tarjeta individual de proyecto.
- * Toda la tarjeta es un enlace al repositorio en GitHub.
+ *
+ * La tarjeta NO es un enlace envolvente: un proyecto puede tener dos destinos
+ * (repositorio y sitio en vivo) o ninguno (repositorio privado), y anidar
+ * enlaces dentro de un <a> no es HTML válido. Por eso los enlaces son
+ * explícitos, al pie de la tarjeta.
  */
 import type { Project } from '../data/projects';
-import type { Lang } from '../i18n/ui';
+import { t, type Lang } from '../i18n/ui';
 
 interface Props {
   project: Project;
   lang: Lang;
   index: number;
-  viewRepoLabel: string;
 }
-const { project, lang, index, viewRepoLabel } = Astro.props;
-const url = `https://github.com/ruben-salas20/${project.repo}`;
+const { project, lang, index } = Astro.props;
+const tr = t(lang);
+
+// Sin `repo` el proyecto es privado: se describe, pero no se enlaza a un 404.
+const repoUrl = project.repo
+  ? `https://github.com/ruben-salas20/${project.repo}`
+  : null;
 ---
 
-<a
-  href={url}
-  target="_blank"
-  rel="noopener noreferrer"
-  class="group block border border-line bg-surface/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/55 hover:bg-surface"
+<article
+  class="group border border-line bg-surface/40 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-accent/55 hover:bg-surface"
 >
   <div class="flex items-baseline justify-between gap-4">
-    <div class="flex items-baseline gap-3">
+    <div class="flex flex-wrap items-baseline gap-3">
       <span class="font-mono text-xs text-faint">/{String(index + 1).padStart(2, '0')}</span>
-      <h3 class="font-display text-xl text-ink transition-colors group-hover:text-accent">
-        {project.name}
-      </h3>
+
+      {
+        repoUrl ? (
+          <a
+            href={repoUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="font-display text-xl text-ink transition-colors hover:text-accent"
+          >
+            <h3>{project.name}</h3>
+          </a>
+        ) : (
+          <h3 class="font-display text-xl text-ink">{project.name}</h3>
+        )
+      }
+
       {
         project.status && (
           <span class="border border-line px-2 py-0.5 font-mono text-[10px] text-prompt">
@@ -51,13 +69,44 @@ const url = `https://github.com/ruben-salas20/${project.repo}`;
     }
   </div>
 
-  <span
-    class="mt-5 inline-flex items-center gap-1.5 font-mono text-xs text-accent"
-  >
-    {viewRepoLabel}
-    <span
-      class="transition-transform duration-300 group-hover:translate-x-1"
-      aria-hidden="true">→</span
-    >
-  </span>
-</a>
+  <!-- Pie: enlaces disponibles, o el aviso de repositorio privado. -->
+  <div class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2">
+    {
+      repoUrl && (
+        <a
+          href={repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-1.5 font-mono text-xs text-accent"
+        >
+          {tr.work.viewRepo}
+          <span class="transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+            →
+          </span>
+        </a>
+      )
+    }
+
+    {
+      project.live && (
+        <a
+          href={project.live}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="link-underline inline-flex items-center gap-1.5 font-mono text-xs text-muted hover:text-ink"
+        >
+          {tr.work.viewLive} ↗
+        </a>
+      )
+    }
+
+    {
+      !repoUrl && (
+        <span class="inline-flex items-center gap-2 font-mono text-[11px] text-faint">
+          <span class="h-1 w-1 rounded-full bg-faint" aria-hidden="true" />
+          {tr.work.privateRepo}
+        </span>
+      )
+    }
+  </div>
+</article>

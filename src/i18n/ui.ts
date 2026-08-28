@@ -6,9 +6,9 @@
  * Patrón "dictionary": una sola fuente de verdad para EN y ES.
  */
 
-export const languages = { en: 'EN', es: 'ES' } as const;
+export const languages = { es: 'ES', en: 'EN' } as const;
 export type Lang = keyof typeof languages;
-export const defaultLang: Lang = 'en';
+export const defaultLang: Lang = 'es';
 
 export const ui = {
   en: {
@@ -53,10 +53,12 @@ export const ui = {
     work: {
       kicker: '03 — Work',
       title: 'Selected projects.',
-      lead: 'A mix of full-stack apps, CLI tools and automation — every one of them shipped to a public repository.',
+      lead: 'A short list on purpose — the work I stand behind, not everything I have ever pushed.',
       aiNote:
         "Each project was built with AI-assisted development — I direct the architecture and decisions while learning to code. Directing AI to ship real software is a craft I'm deliberately practising.",
       viewRepo: 'View repository',
+      viewLive: 'Live site',
+      privateRepo: 'Private repository — internal to the business',
       allRepos: 'See all repositories on GitHub',
     },
     contact: {
@@ -114,10 +116,12 @@ export const ui = {
     work: {
       kicker: '03 — Proyectos',
       title: 'Proyectos seleccionados.',
-      lead: 'Una mezcla de apps full-stack, herramientas de CLI y automatización — todos publicados en un repositorio público.',
+      lead: 'Una lista corta a propósito — el trabajo que sostengo, no todo lo que he subido.',
       aiNote:
         'Cada proyecto se construyó con desarrollo asistido por IA — yo dirijo la arquitectura y las decisiones mientras aprendo a programar. Dirigir una IA para entregar software real es un oficio que practico de forma deliberada.',
       viewRepo: 'Ver repositorio',
+      viewLive: 'Sitio en vivo',
+      privateRepo: 'Repositorio privado — código interno del negocio',
       allRepos: 'Ver todos los repositorios en GitHub',
     },
     contact: {

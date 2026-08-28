@@ -2,16 +2,25 @@
  * Catálogo de proyectos del portafolio.
  * Cada proyecto trae su descripción en EN y ES; el resto (stack, repo) es neutro.
  * El orden de este array es el orden en que aparecen en la página.
+ *
+ * Criterio de entrada: solo proyectos que aguantan que alguien abra el código
+ * (o, si es privado, que se puedan describir sin prometer un repo que no existe).
  */
 
 export interface Project {
-  /** Slug del repo en GitHub (github.com/ruben-salas20/<repo>). */
-  repo: string;
+  /**
+   * Slug del repo en GitHub (github.com/ruben-salas20/<repo>).
+   * `null` cuando el repositorio es privado: la tarjeta no muestra enlace
+   * al código y avisa de que es privado, en vez de enlazar a un 404.
+   */
+  repo: string | null;
   /** Nombre mostrado. */
   name: string;
   year: string;
   /** Tecnologías clave (se muestran como etiquetas). */
   stack: string[];
+  /** Sitio en vivo, si existe (landing, demo o app desplegada). */
+  live?: string;
   /** Estado opcional, ej. "Pre-alpha" / "En desarrollo". */
   status?: { en: string; es: string };
   desc: { en: string; es: string };
@@ -19,53 +28,25 @@ export interface Project {
 
 export const projects: Project[] = [
   {
-    repo: 'study-timer',
-    name: 'Study Timer',
+    repo: 'OpenCall.md',
+    name: 'OpenCall.md',
     year: '2026',
-    stack: ['React 19', 'TypeScript', 'PocketBase', 'Docker', 'PWA'],
+    live: 'https://opencall.rubensalas.dev',
+    stack: ['Electron', 'TypeScript', 'React', 'sherpa-onnx', 'Ollama'],
     desc: {
-      en: 'A self-hostable, competitive study tracker for friend groups. Timed sessions, friend codes, live challenges and a stats dashboard — built as a full PWA with offline support and push notifications. Zero vendor lock-in.',
-      es: 'Un tracker de estudio competitivo y autoalojable para grupos de amigos. Sesiones cronometradas, códigos de amistad, retos en vivo y un panel de estadísticas — una PWA completa con soporte offline y notificaciones push. Sin dependencia de proveedores.',
+      en: 'A desktop app that records, transcribes and summarises classes and meetings entirely on your own machine. Built on top of the open-source call.md, swapping its paid cloud dependency for local Whisper transcription (sherpa-onnx) and a pluggable LLM backend — Ollama or any OpenAI-compatible provider. Ships a working Windows installer, 257 automated tests and its own landing page.',
+      es: 'Una aplicación de escritorio que graba, transcribe y resume clases y reuniones enteramente en tu propia máquina. Construida sobre el proyecto open source call.md, sustituyendo su dependencia de nube de pago por transcripción local con Whisper (sherpa-onnx) y un backend de LLM intercambiable: Ollama o cualquier proveedor compatible con la API de OpenAI. Incluye instalador de Windows funcionando, 257 tests automatizados y su propia landing.',
     },
   },
   {
-    repo: 'agents-ai',
-    name: 'agents-ai',
-    year: '2026',
-    stack: ['JavaScript', 'Node.js', 'Vitest'],
-    desc: {
-      en: 'A unified CLI to discover, install and manage AI coding agents across editors — Claude Code, Cursor, Copilot, Windsurf and more. Features a shared registry and 3-way drift detection that protects your local edits from upstream changes.',
-      es: 'Una CLI unificada para descubrir, instalar y gestionar agentes de IA de programación entre editores — Claude Code, Cursor, Copilot, Windsurf y más. Con un registro compartido y detección de drift de 3 vías que protege tus ediciones locales de los cambios upstream.',
-    },
-  },
-  {
-    repo: 'vaecos-tracking',
+    // Repositorio privado: es código interno de un negocio en operación.
+    repo: null,
     name: 'VAECOS Tracking',
     year: '2026',
-    stack: ['Python', 'Automation'],
+    stack: ['Python', 'Flask', 'SQLite', 'Playwright', 'LLM tool-calling'],
     desc: {
-      en: 'An order-tracking tool built for VAECOS, the family dropshipping business — automating shipment status and logistics workflows that were previously handled by hand.',
-      es: 'Una herramienta de seguimiento de pedidos para VAECOS, el negocio familiar de dropshipping — automatiza estados de envío y flujos logísticos que antes se hacían a mano.',
-    },
-  },
-  {
-    repo: 'traductor-pantalla',
-    name: 'Screen Translator',
-    year: '2026',
-    stack: ['Python', 'Windows'],
-    desc: {
-      en: 'A real-time screen translator for Windows that captures a selected region and translates it on the fly (EN → ES) — useful for untranslated software and documentation.',
-      es: 'Un traductor de pantalla en tiempo real para Windows que captura una región seleccionada y la traduce al vuelo (EN → ES) — útil para software y documentación sin traducir.',
-    },
-  },
-  {
-    repo: 'comando-ayuda',
-    name: 'comando-ayuda',
-    year: '2026',
-    stack: ['Python', 'Shell'],
-    desc: {
-      en: 'A terminal command, `ayuda`, that translates any tool’s `--help` output into Spanish — lowering the language barrier on the command line for Spanish-speaking learners.',
-      es: 'Un comando de terminal, `ayuda`, que traduce al español la salida `--help` de cualquier herramienta — bajando la barrera del idioma en la línea de comandos para quienes aprenden en español.',
+      en: 'The internal logistics and finance platform running in production for our family dropshipping store, which operates in Guatemala. It reconciles shipment tracking across systems, creates shipping labels end to end in a third-party ERP through a browser bot with an AI address validator, keeps the financial ledger, and answers questions about its own data through a conversational assistant with tool-calling.',
+      es: 'La plataforma interna de logística y finanzas que corre en producción para la tienda de dropshipping de mi familia, que opera en Guatemala. Reconcilia el estado de los envíos entre sistemas, crea guías de transporte de extremo a extremo en un ERP externo mediante un bot de navegador con validación de direcciones por IA, lleva el libro financiero y responde preguntas sobre sus propios datos a través de un asistente conversacional con tool-calling.',
     },
   },
 ];
