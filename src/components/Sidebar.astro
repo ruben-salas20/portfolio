@@ -22,7 +22,8 @@ const navItems = [
 ];
 
 // El toggle de idioma apunta a la misma página en el otro idioma.
-const isEs = lang === 'es';
+// El español es el idioma por defecto y vive en la raíz; el inglés en "/en/".
+const isEn = lang === 'en';
 ---
 
 <aside
@@ -30,7 +31,7 @@ const isEs = lang === 'es';
 >
   <!-- Marca: monograma + nombre + rol -->
   <div class="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
-    <a href={isEs ? '/es/' : '/'} class="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
+    <a href={isEn ? '/en/' : '/'} class="flex items-center gap-4 lg:flex-col lg:items-start lg:gap-5">
       <span
         class="grid h-11 w-11 place-items-center border border-line bg-elevated font-mono text-sm font-medium text-accent"
       >
@@ -90,20 +91,20 @@ const isEs = lang === 'es';
         GitHub ↗
       </a>
 
-      <!-- Toggle de idioma EN / ES -->
+      <!-- Toggle de idioma ES / EN -->
       <div class="flex items-center gap-1 font-mono text-[11px]">
         <a
           href="/"
-          class={`px-1 transition-colors ${lang === 'en' ? 'text-accent' : 'text-faint hover:text-ink'}`}
-        >
-          EN
-        </a>
-        <span class="text-line">/</span>
-        <a
-          href="/es/"
           class={`px-1 transition-colors ${lang === 'es' ? 'text-accent' : 'text-faint hover:text-ink'}`}
         >
           ES
+        </a>
+        <span class="text-line">/</span>
+        <a
+          href="/en/"
+          class={`px-1 transition-colors ${lang === 'en' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+        >
+          EN
         </a>
       </div>
     </div>
