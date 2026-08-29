@@ -110,12 +110,33 @@ const personSchema = {
       set:html={JSON.stringify(personSchema)}
     />
 
-    <!-- Fuentes: Fraunces (display), Hanken Grotesk (texto), JetBrains Mono (código) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!--
+      Fuentes: Fraunces (display), Hanken Grotesk (texto), JetBrains Mono
+      (código). Autoalojadas — las declara @font-face en global.css.
+      Las tres se usan por encima del pliegue, y como la página no carga
+      imágenes ni scripts externos, precargarlas las tres es lo óptimo:
+      arrancan junto al CSS en vez de esperar a que este las descubra.
+    -->
     <link
-      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
+      rel="preload"
+      href="/fonts/fraunces-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/hanken-grotesk-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/jetbrains-mono-latin.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
     />
   </head>
 
