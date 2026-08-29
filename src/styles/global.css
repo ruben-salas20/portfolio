@@ -62,7 +62,12 @@
   /* Texto (de más fuerte a más tenue) */
   --color-ink: #e9ebf1;
   --color-muted: #9aa1b2;
-  --color-faint: #686f80;
+  /* El valor anterior (#686f80) daba 3.60:1 sobre el fondo y no llegaba al
+     4.5:1 que exige WCAG AA. Las herramientas automáticas no lo detectaban
+     porque el `backdrop-blur` translúcido de la sidebar les impide resolver
+     un color de fondo sólido. Este tono cumple contra los dos fondos donde
+     se usa: 5.23:1 sobre --color-base y 4.87:1 sobre --color-surface. */
+  --color-faint: #828a9c;
 
   /* Acentos */
   --color-accent: #88c0d0;   /* frost — enlaces, hover, foco */
