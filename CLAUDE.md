@@ -41,12 +41,21 @@ Todo el `<head>` se genera en `src/layouts/Layout.astro` a partir de `Astro.site
 
 Los iconos de `public/` (`favicon.svg`, `favicon.ico`, `apple-touch-icon.png`) y `og-image.png` se generaron rasterizando HTML/SVG con Edge en headless. Si hay que rehacerlos, **usa `--headless=new`**: el headless antiguo renderiza mal el SVG, y Windows clampa las ventanas por debajo de ~200 px, así que hay que renderizar grande y no pedir tamaños pequeños directamente.
 
+### Fuentes
+
+Las tres familias están **autoalojadas** en `public/fonts/` y declaradas con `@font-face` en `src/styles/global.css`; `Layout.astro` las precarga. No dependas de Google Fonts para añadir una fuente o un peso: costaba ~2 s de render en móvil por la cadena de tres saltos (HTML → CSS de Google → woff2 de gstatic).
+
+Las tres son variables, así que **un archivo cubre los pesos 400 y 500**, que son los únicos que usa el sitio. Si necesitas otro peso, primero comprueba que de verdad se use en algún componente. El `unicode-range` replica el subconjunto latino de Google: las flechas (→ ↗) quedan fuera y caen a la fuente del sistema, igual que antes.
+
+### Contraste
+
+`--color-faint` se usa en texto de 10-12 px, así que **cualquier cambio a ese token debe validarse contra `--color-base` y contra `--color-surface`** (el fondo real de la sidebar) con el mínimo AA de 4.5:1. Ojo: Lighthouse y axe no detectan un fallo aquí — el `backdrop-blur` translúcido de la sidebar les impide resolver un fondo sólido y marcan la comprobación como "incompleta", no como fallo. Hay que calcular el ratio a mano.
+
 ### Deuda conocida
 
-Auditoría Lighthouse (agosto 2026): 100 en accesibilidad, buenas prácticas y SEO; performance 94 escritorio / 85 móvil. Dos cosas sin resolver:
-
-- **`--color-faint` (#686f80) sobre `--color-base` da 3.60:1 y no cumple WCAG AA** (mínimo 4.5:1). Las herramientas automáticas no lo detectan porque el fondo translúcido con `backdrop-blur` de la sidebar les impide resolver un color sólido. Afecta a texto de 10-12 px que sí se lee: rol, índices de nav, tags de proyecto, pie.
-- **Google Fonts bloquea el render** ~2 s en móvil. Autoalojar las tres fuentes es la mejora de mayor retorno para el score de performance.
+- El apex `rubensalas.dev` redirige a `www` con **307 (temporal)**; debería ser 308 para consolidar la autoridad en un host. Se cambia en el panel de Vercel, no en el repo.
+- `npm audit` deja 3 avisos transitivos vía `sharp`, solo resolubles con `--force`. Son de la cadena de desarrollo y no viajan al sitio estático.
+- Las secciones con `.reveal` arrancan en `opacity: 0` y dependen del IntersectionObserver: sin JavaScript quedan invisibles. Bajo riesgo, pero se cubre con `@media (scripting: none)`.
 
 ## Despliegue
 
