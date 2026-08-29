@@ -29,9 +29,11 @@ Cambiar qué idioma va en la raíz toca cinco sitios a la vez, y olvidar uno dej
 
 `/es/` era la ruta española antigua y hoy es un `redirect` a `/` declarado en `astro.config.mjs`, para no romper enlaces externos.
 
+`src/components/Portfolio.astro` ensambla la página entera (Layout + Sidebar + las cinco secciones). **Añadir o reordenar secciones se hace ahí, una sola vez** — nunca duplicando estructura por idioma.
+
 ### `/llms.txt`
 
-`src/pages/llms.txt.ts` es un endpoint estático que genera el resumen del sitio para modelos de lenguaje ([formato llmstxt.org](https://llmstxt.org)). **Se construye a partir de `i18n/ui.ts`, `data/projects.ts` y `data/skills.ts`**, así que no hay que mantenerlo a mano: añadir un proyecto o cambiar un texto lo actualiza solo. Usa `Astro.site` (definido como `https://rubensalas.dev` en la config) para las URLs absolutas.
+`src/pages/llms.txt.ts` es un endpoint estático que genera el resumen del sitio para modelos de lenguaje ([formato llmstxt.org](https://llmstxt.org)). **Se construye a partir de `i18n/ui.ts`, `data/projects.ts` y `data/skills.ts`**, así que no hay que mantenerlo a mano: añadir un proyecto o cambiar un texto lo actualiza solo. Usa `Astro.site` para las URLs absolutas, así que hereda el host canónico con `www` (ver más abajo).
 
 ### SEO y metadatos
 
@@ -50,18 +52,6 @@ Las tres son variables, así que **un archivo cubre los pesos 400 y 500**, que s
 ### Contraste
 
 `--color-faint` se usa en texto de 10-12 px, así que **cualquier cambio a ese token debe validarse contra `--color-base` y contra `--color-surface`** (el fondo real de la sidebar) con el mínimo AA de 4.5:1. Ojo: Lighthouse y axe no detectan un fallo aquí — el `backdrop-blur` translúcido de la sidebar les impide resolver un fondo sólido y marcan la comprobación como "incompleta", no como fallo. Hay que calcular el ratio a mano.
-
-### Deuda conocida
-
-- El apex `rubensalas.dev` redirige a `www` con **307 (temporal)**; debería ser 308 para consolidar la autoridad en un host. Se cambia en el panel de Vercel, no en el repo.
-- `npm audit` deja 3 avisos transitivos vía `sharp`, solo resolubles con `--force`. Son de la cadena de desarrollo y no viajan al sitio estático.
-- Las secciones con `.reveal` arrancan en `opacity: 0` y dependen del IntersectionObserver: sin JavaScript quedan invisibles. Bajo riesgo, pero se cubre con `@media (scripting: none)`.
-
-## Despliegue
-
-El sitio se publica en Vercel **desde `origin/main` en GitHub**. Vercel no ve el árbol de trabajo local: un cambio no llega a producción hasta que está commiteado *y* pusheado. Si el usuario dice que no ve sus cambios en el sitio, comprueba primero `git status` y si `git rev-parse HEAD` coincide con `git ls-remote origin refs/heads/main`.
-
-`src/components/Portfolio.astro` ensambla la página entera (Layout + Sidebar + las cinco secciones). **Añadir o reordenar secciones se hace ahí, una sola vez** — nunca duplicando estructura por idioma.
 
 ### Propagación de `lang` y diccionario
 
@@ -97,3 +87,13 @@ Por eso los ids de sección (`home`, `about`, `skills`, `work`, `contact`) deben
 ### Idioma de los comentarios
 
 El código está comentado en español, explicando el *por qué* de cada pieza. Mantén ese registro y densidad al escribir código nuevo.
+
+## Deuda conocida
+
+- El apex `rubensalas.dev` redirige a `www` con **307 (temporal)**; debería ser 308 para consolidar la autoridad en un host. Se cambia en el panel de Vercel, no en el repo.
+- `npm audit` deja 3 avisos transitivos vía `sharp`, solo resolubles con `--force`. Son de la cadena de desarrollo y no viajan al sitio estático.
+- Las secciones con `.reveal` arrancan en `opacity: 0` y dependen del IntersectionObserver: sin JavaScript quedan invisibles. Bajo riesgo, pero se cubre con `@media (scripting: none)`.
+
+## Despliegue
+
+El sitio se publica en Vercel **desde `origin/main` en GitHub**. Vercel no ve el árbol de trabajo local: un cambio no llega a producción hasta que está commiteado *y* pusheado. Si el usuario dice que no ve sus cambios en el sitio, comprueba primero `git status` y si `git rev-parse HEAD` coincide con `git ls-remote origin refs/heads/main`.
