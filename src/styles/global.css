@@ -167,5 +167,20 @@
     opacity: 1 !important;
     transform: none !important;
   }
-  .cursor-blink { animation: none !important; }
+  /* `animate-ping` es una utilidad de Tailwind, no de @layer utilities de este
+     archivo, y por eso se quedó fuera de esta lista: era la única animación que
+     seguía corriendo con reduced-motion activo. Detenerla deja el halo estático
+     encima del punto sólido, así que el aviso de disponibilidad no se pierde. */
+  .cursor-blink,
+  .animate-ping { animation: none !important; }
+}
+
+/* Sin JavaScript el IntersectionObserver nunca añade `.is-visible`, y las cuatro
+   secciones marcadas con `.reveal` se quedan en opacity: 0 — es decir, la página
+   entera menos el hero. Esto las devuelve visibles cuando no hay scripting. */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

@@ -91,18 +91,29 @@ const isEn = lang === 'en';
         GitHub ↗
       </a>
 
-      <!-- Toggle de idioma ES / EN -->
+      <!--
+        Toggle de idioma ES / EN.
+        El idioma activo se marca con `aria-current` y con un subrayado, no solo
+        con el color: quien no distingue el acento del gris necesita una segunda
+        señal, y un lector de pantalla sin `aria-current` anuncia dos enlaces
+        idénticos. El valor es `page` y no `true` porque los dos enlaces apuntan
+        a páginas distintas, así que el lector anuncia "página actual".
+        El borde va en ambos (transparente en el inactivo) para que activar uno
+        u otro no desplace la fila un píxel.
+      -->
       <div class="flex items-center gap-1 font-mono text-[11px]">
         <a
           href="/"
-          class={`px-1 transition-colors ${lang === 'es' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+          aria-current={isEn ? undefined : 'page'}
+          class={`border-b px-1 transition-colors ${isEn ? 'border-transparent text-faint hover:text-ink' : 'border-accent text-accent'}`}
         >
           ES
         </a>
         <span class="text-line">/</span>
         <a
           href="/en/"
-          class={`px-1 transition-colors ${lang === 'en' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+          aria-current={isEn ? 'page' : undefined}
+          class={`border-b px-1 transition-colors ${isEn ? 'border-accent text-accent' : 'border-transparent text-faint hover:text-ink'}`}
         >
           EN
         </a>
