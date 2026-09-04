@@ -188,7 +188,30 @@
     background-repeat: no-repeat;
     transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .link-underline:hover { background-size: 100% 1px; }
+  /* Es la única regla :hover escrita a mano del sitio; las de Tailwind ya salen
+     envueltas en esta media query. Sin ella, en táctil el subrayado se queda
+     dibujado tras el toque hasta que tocas en otro sitio. */
+  @media (hover: hover) {
+    .link-underline:hover { background-size: 100% 1px; }
+  }
+
+  /* Amplía el área de pulsación sin cambiar el tamaño visible. Estos enlaces de
+     12px miden ~16px de alto, y subirlos con padding descolocaría el subrayado
+     y rompería la densidad de la sidebar.
+     Las áreas extendidas nunca deben solaparse, que es justo lo que WCAG 2.5.8
+     no quiere; por eso el ensanche horizontal es ajustable: el toggle ES/EN
+     tiene sus centros a 34px y con los 8px por lado del resto se pisarían. */
+  .tap-target {
+    position: relative;
+  }
+  .tap-target::after {
+    content: "";
+    position: absolute;
+    /* El valor por defecto va aquí y no en `.tap-target`: declararlo en la
+       clase lo pone a competir con el override en la misma especificidad, y
+       gana el que quede después en la hoja. */
+    inset: -0.5rem var(--tap-inset-x, -0.5rem);
+  }
 }
 
 /* Respeta a quien desactiva animaciones en su sistema (accesibilidad) */

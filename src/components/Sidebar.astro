@@ -55,7 +55,7 @@ const isEn = lang === 'en';
           data-nav
           class="group flex items-center gap-3 py-1.5 transition-colors lg:py-2.5"
         >
-          <span class="nav-bar h-px w-2 bg-faint transition-all duration-300 group-hover:w-5 group-hover:bg-accent" />
+          <span class="nav-bar h-px w-2 bg-faint transition-[width,background-color] duration-300 group-hover:w-5 group-hover:bg-accent" />
           <span class="nav-index font-mono text-xs text-faint transition-colors">
             0{i + 1}
           </span>
@@ -86,7 +86,7 @@ const isEn = lang === 'en';
         href={contactInfo.github}
         target="_blank"
         rel="noopener noreferrer"
-        class="font-mono text-xs text-faint transition-colors hover:text-accent"
+        class="tap-target font-mono text-xs text-faint transition-colors hover:text-accent"
       >
         GitHub ↗
       </a>
@@ -101,19 +101,18 @@ const isEn = lang === 'en';
         El borde va en ambos (transparente en el inactivo) para que activar uno
         u otro no desplace la fila un píxel.
       -->
-      <div class="flex items-center gap-1 font-mono text-xs">
+      <div class="flex items-center gap-3 font-mono text-xs">
         <a
           href="/"
           aria-current={isEn ? undefined : 'page'}
-          class={`border-b px-1 transition-colors ${isEn ? 'border-transparent text-faint hover:text-ink' : 'border-accent text-accent'}`}
+          class={`tap-target [--tap-inset-x:-0.3rem] border-b px-1 transition-colors ${isEn ? 'border-transparent text-faint hover:text-ink' : 'border-accent text-accent'}`}
         >
           ES
         </a>
-        <span class="text-line">/</span>
         <a
           href="/en/"
           aria-current={isEn ? 'page' : undefined}
-          class={`border-b px-1 transition-colors ${isEn ? 'border-accent text-accent' : 'border-transparent text-faint hover:text-ink'}`}
+          class={`tap-target [--tap-inset-x:-0.3rem] border-b px-1 transition-colors ${isEn ? 'border-accent text-accent' : 'border-transparent text-faint hover:text-ink'}`}
         >
           EN
         </a>
