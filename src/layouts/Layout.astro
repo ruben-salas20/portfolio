@@ -141,6 +141,18 @@ const personSchema = {
   </head>
 
   <body class="min-h-screen antialiased">
+    <!--
+      Salto al contenido: antes del <main> hay nueve paradas de teclado
+      (marca, cinco enlaces de nav, GitHub y los dos de idioma), y se repiten
+      en cada carga. Invisible hasta que recibe el foco.
+    -->
+    <a
+      href="#home"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-base"
+    >
+      {tr.a11y.skipToContent}
+    </a>
+
     <!-- Fondo atmosférico: malla de puntos sutil + halo de color. -->
     <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10">
       <div

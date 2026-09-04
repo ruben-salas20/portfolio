@@ -69,14 +69,34 @@
      se usa: 5.23:1 sobre --color-base y 4.87:1 sobre --color-surface. */
   --color-faint: #828a9c;
 
-  /* Acentos */
-  --color-accent: #88c0d0;   /* frost — enlaces, hover, foco */
-  --color-prompt: #a3be8c;   /* aurora green — prompts de terminal */
+  /* Acentos. Los dos se reparten un significado cada uno, y la regla es la que
+     hace legible la página: si algo está en frost, se puede pulsar; si está en
+     aurora, no. Pintar de frost un texto estático invita a hacer clic donde no
+     hay nada, así que ese tono no sale de lo interactivo. */
+  --color-accent: #88c0d0;   /* frost — solo interactivo: enlaces, hover, foco, nav activa */
+  --color-prompt: #a3be8c;   /* aurora green — solo anotación estática: prompt, kickers, // note, estado */
 
   /* Tipografía */
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-sans: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
+
+  /* Escala de display — los cinco pasos que usan los titulares. Antes vivían
+     sueltos en las plantillas como `text-[2.4rem]` y compañía, mezclados con
+     la escala de Tailwind, así que no había forma de saber cuál tocaba.
+     Hay exactamente un paso por tamaño en uso: si añades uno, es porque un rol
+     nuevo lo pide. Todo lo que no es titular sigue en la escala de Tailwind,
+     con `text-xs` (12px) como suelo. */
+  --text-display-xs: 1.875rem; /* 30px   — h2 de sección en móvil */
+  --text-display-xs--line-height: 1.1;
+  --text-display-sm: 2.1rem; /* 33.6px — h1 en móvil */
+  --text-display-sm--line-height: 1.1;
+  --text-display-md: 2.4rem; /* 38.4px — h2 de sección */
+  --text-display-md--line-height: 1.1;
+  --text-display-lg: 3rem; /* 48px   — h1 en tablet */
+  --text-display-lg--line-height: 1.1;
+  --text-display-xl: 3.4rem; /* 54.4px — h1 en escritorio */
+  --text-display-xl--line-height: 1.1;
 }
 
 /* ============================================================
@@ -99,6 +119,20 @@
   ::selection {
     background: var(--color-accent);
     color: var(--color-base);
+  }
+
+  /* Reparto de líneas. `balance` reparte el titular en líneas parejas en vez de
+     dejar la última suelta; `pretty` evita que un párrafo termine con una
+     palabra huérfana. Va sobre el elemento y no como utilidad suelta para que
+     cualquier sección o tarjeta nueva lo herede sin acordarse de pedirlo. */
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 
   /* Scrollbar discreta, acorde a la estética */
@@ -154,7 +188,30 @@
     background-repeat: no-repeat;
     transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
   }
-  .link-underline:hover { background-size: 100% 1px; }
+  /* Es la única regla :hover escrita a mano del sitio; las de Tailwind ya salen
+     envueltas en esta media query. Sin ella, en táctil el subrayado se queda
+     dibujado tras el toque hasta que tocas en otro sitio. */
+  @media (hover: hover) {
+    .link-underline:hover { background-size: 100% 1px; }
+  }
+
+  /* Amplía el área de pulsación sin cambiar el tamaño visible. Estos enlaces de
+     12px miden ~16px de alto, y subirlos con padding descolocaría el subrayado
+     y rompería la densidad de la sidebar.
+     Las áreas extendidas nunca deben solaparse, que es justo lo que WCAG 2.5.8
+     no quiere; por eso el ensanche horizontal es ajustable: el toggle ES/EN
+     tiene sus centros a 34px y con los 8px por lado del resto se pisarían. */
+  .tap-target {
+    position: relative;
+  }
+  .tap-target::after {
+    content: "";
+    position: absolute;
+    /* El valor por defecto va aquí y no en `.tap-target`: declararlo en la
+       clase lo pone a competir con el override en la misma especificidad, y
+       gana el que quede después en la hoja. */
+    inset: -0.5rem var(--tap-inset-x, -0.5rem);
+  }
 }
 
 /* Respeta a quien desactiva animaciones en su sistema (accesibilidad) */
@@ -167,5 +224,20 @@
     opacity: 1 !important;
     transform: none !important;
   }
-  .cursor-blink { animation: none !important; }
+  /* `animate-ping` es una utilidad de Tailwind, no de @layer utilities de este
+     archivo, y por eso se quedó fuera de esta lista: era la única animación que
+     seguía corriendo con reduced-motion activo. Detenerla deja el halo estático
+     encima del punto sólido, así que el aviso de disponibilidad no se pierde. */
+  .cursor-blink,
+  .animate-ping { animation: none !important; }
+}
+
+/* Sin JavaScript el IntersectionObserver nunca añade `.is-visible`, y las cuatro
+   secciones marcadas con `.reveal` se quedan en opacity: 0 — es decir, la página
+   entera menos el hero. Esto las devuelve visibles cuando no hay scripting. */
+@media (scripting: none) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

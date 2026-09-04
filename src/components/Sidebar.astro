@@ -39,7 +39,7 @@ const isEn = lang === 'en';
       </span>
       <div>
         <p class="font-display text-xl leading-none text-ink">Rubén Salas</p>
-        <p class="mt-1.5 font-mono text-[11px] tracking-wide text-faint">
+        <p class="mt-1.5 font-mono text-xs tracking-wide text-faint">
           {tr.sidebar.role}
         </p>
       </div>
@@ -55,8 +55,8 @@ const isEn = lang === 'en';
           data-nav
           class="group flex items-center gap-3 py-1.5 transition-colors lg:py-2.5"
         >
-          <span class="nav-bar h-px w-2 bg-faint transition-all duration-300 group-hover:w-5 group-hover:bg-accent" />
-          <span class="nav-index font-mono text-[11px] text-faint transition-colors">
+          <span class="nav-bar h-px w-2 bg-faint transition-[width,background-color] duration-300 group-hover:w-5 group-hover:bg-accent" />
+          <span class="nav-index font-mono text-xs text-faint transition-colors">
             0{i + 1}
           </span>
           <span class="nav-label text-sm text-muted transition-colors group-hover:text-ink">
@@ -77,7 +77,7 @@ const isEn = lang === 'en';
         ></span>
         <span class="relative inline-flex h-2 w-2 rounded-full bg-prompt"></span>
       </span>
-      <span class="font-mono text-[11px] text-muted">{tr.sidebar.available}</span>
+      <span class="font-mono text-xs text-muted">{tr.sidebar.available}</span>
     </div>
 
     <div class="flex items-center justify-between">
@@ -86,29 +86,39 @@ const isEn = lang === 'en';
         href={contactInfo.github}
         target="_blank"
         rel="noopener noreferrer"
-        class="font-mono text-[11px] text-faint transition-colors hover:text-accent"
+        class="tap-target font-mono text-xs text-faint transition-colors hover:text-accent"
       >
         GitHub ↗
       </a>
 
-      <!-- Toggle de idioma ES / EN -->
-      <div class="flex items-center gap-1 font-mono text-[11px]">
+      <!--
+        Toggle de idioma ES / EN.
+        El idioma activo se marca con `aria-current` y con un subrayado, no solo
+        con el color: quien no distingue el acento del gris necesita una segunda
+        señal, y un lector de pantalla sin `aria-current` anuncia dos enlaces
+        idénticos. El valor es `page` y no `true` porque los dos enlaces apuntan
+        a páginas distintas, así que el lector anuncia "página actual".
+        El borde va en ambos (transparente en el inactivo) para que activar uno
+        u otro no desplace la fila un píxel.
+      -->
+      <div class="flex items-center gap-3 font-mono text-xs">
         <a
           href="/"
-          class={`px-1 transition-colors ${lang === 'es' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+          aria-current={isEn ? undefined : 'page'}
+          class={`tap-target [--tap-inset-x:-0.3rem] border-b px-1 transition-colors ${isEn ? 'border-transparent text-faint hover:text-ink' : 'border-accent text-accent'}`}
         >
           ES
         </a>
-        <span class="text-line">/</span>
         <a
           href="/en/"
-          class={`px-1 transition-colors ${lang === 'en' ? 'text-accent' : 'text-faint hover:text-ink'}`}
+          aria-current={isEn ? 'page' : undefined}
+          class={`tap-target [--tap-inset-x:-0.3rem] border-b px-1 transition-colors ${isEn ? 'border-accent text-accent' : 'border-transparent text-faint hover:text-ink'}`}
         >
           EN
         </a>
       </div>
     </div>
 
-    <p class="hidden font-mono text-[10px] text-faint lg:block">{tr.footer.year}</p>
+    <p class="hidden font-mono text-xs text-faint lg:block">{tr.footer.year}</p>
   </div>
 </aside>

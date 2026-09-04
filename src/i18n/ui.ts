@@ -17,6 +17,9 @@ export const ui = {
       description:
         'Portfolio of Rubén Salas, a systems engineering student from Armenia, Colombia, building toward AI engineering and research.',
     },
+    a11y: {
+      skipToContent: 'Skip to content',
+    },
     nav: {
       home: 'Home',
       about: 'About',
@@ -26,23 +29,20 @@ export const ui = {
     },
     sidebar: {
       role: 'Systems Engineering Student',
-      location: '~/armenia · colombia',
       available: 'Open to collaboration',
-      sourceCode: 'Source',
     },
     hero: {
       prompt: 'ruben@portfolio:~$ whoami',
       headline: 'Systems engineering student, building toward AI engineering & research.',
-      lead: "I'm a self-directed builder from Armenia, Colombia. I learn by shipping — command-line tools, web apps and AI tooling — turning genuine curiosity into working software.",
+      lead: "I’m a self-directed builder from Armenia, Colombia. I learn by shipping — command-line tools, web apps and AI tooling — turning genuine curiosity into working software.",
       ctaWork: 'View work',
       ctaContact: 'Get in touch',
-      scroll: 'scroll',
     },
     about: {
       kicker: '01 — About',
       title: 'Learning by building.',
-      p1: "I'm a second-semester Systems Engineering student. I learn in cycles, driven by genuine curiosity rather than obligation — building practical projects is how concepts actually stick for me.",
-      p2: "Right now I work in the Technology & AI department at VAECOS, my family's dropshipping business, automating real operational processes. My long-term aim is to become an AI Engineer and Researcher — someone who both understands how these systems work and can build genuinely useful things with them.",
+      p1: "I’m a second-semester Systems Engineering student. I learn in cycles, driven by genuine curiosity rather than obligation — building practical projects is how concepts actually stick for me.",
+      p2: "Right now I work in the Technology & AI department at VAECOS, my family’s dropshipping business, automating real operational processes. My long-term aim is to become an AI Engineer and Researcher — someone who both understands how these systems work and can build genuinely useful things with them.",
       p3: 'I think in long, ambitious arcs, and I care about contributing to my community, not just personal success.',
     },
     skills: {
@@ -63,8 +63,8 @@ export const ui = {
     },
     contact: {
       kicker: '04 — Contact',
-      title: "Let's build something.",
-      lead: "I'm open to collaboration, open-source contributions and learning opportunities. The fastest way to reach me is email.",
+      title: "Let’s build something.",
+      lead: "I’m open to collaboration, open-source contributions and learning opportunities. The fastest way to reach me is email.",
       emailLabel: 'Email',
       githubLabel: 'GitHub',
     },
@@ -80,6 +80,9 @@ export const ui = {
       description:
         'Portafolio de Rubén Salas, estudiante de ingeniería de sistemas de Armenia, Colombia, en camino a la ingeniería e investigación en IA.',
     },
+    a11y: {
+      skipToContent: 'Saltar al contenido',
+    },
     nav: {
       home: 'Inicio',
       about: 'Sobre mí',
@@ -89,21 +92,18 @@ export const ui = {
     },
     sidebar: {
       role: 'Estudiante de Ingeniería de Sistemas',
-      location: '~/armenia · colombia',
       available: 'Abierto a colaborar',
-      sourceCode: 'Código',
     },
     hero: {
       prompt: 'ruben@portfolio:~$ whoami',
-      headline: 'Estudiante de ingeniería de sistemas, en camino a la ingeniería en IA y la investigación en IA.',
+      headline: 'Estudiante de ingeniería de sistemas, en camino a la ingeniería y la investigación en IA.',
       lead: 'Soy un builder autodidacta de Armenia, Colombia. Aprendo construyendo — herramientas de línea de comandos, apps web y tooling de IA — convirtiendo la curiosidad genuina en software que funciona.',
       ctaWork: 'Ver proyectos',
       ctaContact: 'Hablemos',
-      scroll: 'scroll',
     },
     about: {
       kicker: '01 — Sobre mí',
-      title: 'Aprendiendo a construir.',
+      title: 'Aprendo construyendo.',
       p1: 'Soy estudiante de segundo semestre de Ingeniería de Sistemas. Aprendo por ciclos, movido por la curiosidad genuina más que por la obligación — construir proyectos prácticos es como los conceptos realmente se me quedan.',
       p2: 'Actualmente trabajo en el departamento de Tecnología e IA de VAECOS, el negocio de dropshipping de mi familia, automatizando procesos operativos reales. Mi meta a largo plazo es ser AI Engineer e Investigador — alguien que entiende cómo funcionan estos sistemas y que puede construir cosas realmente útiles con ellos.',
       p3: 'Pienso en objetivos grandes y a largo plazo, y me importa aportar a mi comunidad, no solo el éxito personal.',
