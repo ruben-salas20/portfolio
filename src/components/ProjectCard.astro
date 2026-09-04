@@ -48,7 +48,7 @@ const repoUrl = project.repo
 
       {
         project.status && (
-          <span class="border border-line px-2 py-0.5 font-mono text-[10px] text-prompt">
+          <span class="border border-line px-2 py-0.5 font-mono text-xs text-prompt">
             {project.status[lang]}
           </span>
         )
@@ -64,7 +64,7 @@ const repoUrl = project.repo
   <div class="mt-4 flex flex-wrap gap-2">
     {
       project.stack.map((tech) => (
-        <span class="font-mono text-[11px] text-faint">{tech}</span>
+        <span class="font-mono text-xs text-faint">{tech}</span>
       ))
     }
   </div>
@@ -102,7 +102,7 @@ const repoUrl = project.repo
 
     {
       !repoUrl && (
-        <span class="inline-flex items-center gap-2 font-mono text-[11px] text-faint">
+        <span class="inline-flex items-center gap-2 font-mono text-xs text-faint">
           <span class="h-1 w-1 rounded-full bg-faint" aria-hidden="true" />
           {tr.work.privateRepo}
         </span>
