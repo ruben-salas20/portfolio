@@ -26,3 +26,6 @@ ABOUT_ME.md
 
 # jetbrains setting folder
 .idea/
+
+# Serena MCP
+.serena/
