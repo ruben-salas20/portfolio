@@ -2,17 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Comandos
+## Validación
 
-```sh
-npm run dev      # servidor de desarrollo en localhost:4321
-npm run build    # build de producción a ./dist/
-npm run preview  # sirve el build local
-```
+No hay tests, linter ni formateador. **El gate es `npm run build`**, que compila las dos rutas y falla ante errores de plantilla.
 
-No hay tests, linter ni formateador configurados. Node >= 22.12.0.
-
-`astro check` **no está disponible**: requiere `@astrojs/check` + `typescript`, que no son dependencias del proyecto, y lanzarlo con `npx` es interactivo y arrastra otra versión de Astro. Para validar cambios usa `npm run build`, que compila las dos rutas y falla ante errores de plantilla.
+`astro check` **no está disponible**: requiere `@astrojs/check` + `typescript`, que no son dependencias del proyecto, y lanzarlo con `npx` es interactivo y arrastra otra versión de Astro.
 
 ## Arquitectura
 
@@ -45,13 +39,15 @@ Los iconos de `public/` (`favicon.svg`, `favicon.ico`, `apple-touch-icon.png`) y
 
 ### Fuentes
 
-Las tres familias están **autoalojadas** en `public/fonts/` y declaradas con `@font-face` en `src/styles/global.css`; `Layout.astro` las precarga. No dependas de Google Fonts para añadir una fuente o un peso: costaba ~2 s de render en móvil por la cadena de tres saltos (HTML → CSS de Google → woff2 de gstatic).
+Las tres familias están **autoalojadas** en `public/fonts/` y declaradas con `@font-face` en `src/styles/global.css`; `Layout.astro` las precarga. Una fuente o un peso nuevo se autoaloja aquí también: Google Fonts costaba ~2 s de render en móvil por la cadena de tres saltos (HTML → CSS de Google → woff2 de gstatic).
 
-Las tres son variables, así que **un archivo cubre los pesos 400 y 500**, que son los únicos que usa el sitio. Si necesitas otro peso, primero comprueba que de verdad se use en algún componente. El `unicode-range` replica el subconjunto latino de Google: las flechas (→ ↗) quedan fuera y caen a la fuente del sistema, igual que antes.
+Las tres son variables, así que **un archivo cubre los pesos 400 y 500**, que son los únicos que usa el sitio. Si necesitas otro peso, primero comprueba que de verdad se use en algún componente. El `unicode-range` se copió del subconjunto latino de Google en vez de derivarlo del contenido, así que incluye ↑ ↓ (sin usar) y deja fuera → ↗ (usadas por todas partes). Esas caen a la fuente del sistema y se ven bien, pero el subconjunto está mal derivado.
 
 ### Contraste
 
-`--color-faint` se usa en texto de 10-12 px, así que **cualquier cambio a ese token debe validarse contra `--color-base` y contra `--color-surface`** (el fondo real de la sidebar) con el mínimo AA de 4.5:1. Ojo: Lighthouse y axe no detectan un fallo aquí — el `backdrop-blur` translúcido de la sidebar les impide resolver un fondo sólido y marcan la comprobación como "incompleta", no como fallo. Hay que calcular el ratio a mano.
+`--color-faint` se usa en texto de 12-14 px, así que **cualquier cambio a ese token debe validarse contra `--color-base` y contra `--color-surface`** (el fondo real de la sidebar) con el mínimo AA de 4.5:1. Ojo: Lighthouse y axe no detectan un fallo aquí — el `backdrop-blur` translúcido de la sidebar les impide resolver un fondo sólido y marcan la comprobación como "incompleta", no como fallo. Hay que calcular el ratio a mano.
+
+Los fondos translúcidos (`bg-surface/50` en la sidebar, `bg-surface/40` en las tarjetas) hay que **componerlos sobre `--color-base` antes de medir**, no medir contra `--color-surface` a secas. Los pares reales son `#171a20` y `#16191f`.
 
 ### Propagación de `lang` y diccionario
 
@@ -71,9 +67,17 @@ La lista de proyectos es deliberadamente corta y curada. Dos criterios de entrad
 
 ### Estilos: tokens en `@theme`
 
-`src/styles/global.css` define en `@theme` la paleta (base/surface/elevated/line, ink/muted/faint, accent/prompt) y las tres familias tipográficas. Tailwind 4 genera de ahí las utilidades — `--color-accent` habilita `text-accent`, `bg-accent`, `border-accent`. **Usa esos tokens en vez de colores literales**; los hex crudos en los componentes solo aparecen en los gradientes inline del fondo en `Layout.astro`.
+`src/styles/global.css` define en `@theme` la paleta, la escala de display y las tres familias tipográficas. Tailwind 4 genera de ahí las utilidades — `--color-accent` habilita `text-accent`, `bg-accent`, `border-accent`. **Usa esos tokens en vez de colores literales**; los hex crudos en los componentes solo aparecen en los gradientes inline del fondo en `Layout.astro`.
 
-Las utilidades propias (`.reveal`, `.animate-fade-up`, `.cursor-blink`, `.link-underline`, `.nav-active`) están en `@layer utilities` del mismo archivo, y todas quedan neutralizadas bajo `prefers-reduced-motion: reduce` — cualquier animación nueva debe respetar ese bloque.
+**Los dos acentos tienen un significado cada uno, y es lo que hace legible la página:** `--color-accent` (frost) es *solo* interactivo — enlaces, hover, foco, nav activa, idioma activo; `--color-prompt` (aurora) es *solo* anotación estática — prompt de terminal, kickers de sección, `// note`, badge de estado. Pintar de frost un texto que no se pulsa invita a hacer clic donde no hay nada.
+
+**La escala tipográfica son cinco pasos `--text-display-*`** (xs 30 px → xl 54.4 px), uno por rol en uso, con su `--line-height` de 1.1. Todo lo que no es titular usa la escala de Tailwind, y **12 px (`text-xs`) es el suelo**. Todo tamaño vive en `@theme`: si hace falta uno nuevo es porque hay un rol nuevo, y se declara ahí.
+
+Las utilidades propias viven en `@layer utilities` del mismo archivo. Tres reglas sobre ellas:
+
+- **Toda animación queda neutralizada bajo `prefers-reduced-motion: reduce`**, y el bloque cubre también utilidades de Tailwind, no solo las de este archivo: `animate-ping` se coló justo por venir de fuera de `@layer utilities`.
+- **`text-wrap` va en `@layer base` sobre el elemento** (`balance` en `h1,h2,h3`, `pretty` en `p`), no como utilidad por componente, para que cualquier sección nueva lo herede sin acordarse de pedirlo.
+- **`.tap-target` amplía el área pulsable con un `::after`** sin tocar el tamaño visible, para enlaces de 12 px que miden ~16 px de alto. Las áreas extendidas **nunca deben solaparse** (WCAG 2.5.8 lo prohíbe), por eso el ensanche horizontal se ajusta con `--tap-inset-x` — el toggle ES/EN tiene los centros a 34 px y con el valor por defecto se pisan. Ese valor por defecto vive en el `var()` del `::after`, no en la clase: declararlo en la clase lo pone a competir con el override a la misma especificidad y gana el que quede después en la hoja.
 
 ### Interacción: dos IntersectionObserver en el Layout
 
@@ -82,17 +86,20 @@ Todo el JS del sitio son dos observers en el `<script>` de `src/layouts/Layout.a
 1. **Reveal al scroll** — observa `.reveal` y le añade `.is-visible`. Una sección nueva necesita la clase `reveal` para aparecer.
 2. **Scroll-spy** — enlaza `section[id]` con los `<a data-nav>` de la sidebar comparando `href="#<id>"`.
 
-Por eso los ids de sección (`home`, `about`, `skills`, `work`, `contact`) deben coincidir con los de `navItems` en `Sidebar.astro`. Cambiar uno obliga a cambiar el otro.
+Por eso los ids de sección (`home`, `about`, `skills`, `work`, `contact`) deben coincidir con los de `navItems` en `Sidebar.astro`. Cambiar uno obliga a cambiar el otro. El enlace de salto al contenido de `Layout.astro` apunta a `#home`, así que también depende de ese id.
+
+`.reveal` arranca en `opacity: 0`, de modo que **sin JavaScript la página entera menos el hero desaparece**. Lo sostiene un `@media (scripting: none)` en `global.css`, que cubre el caso de JS desactivado — no el de un script que carga y revienta.
 
 ### Idioma de los comentarios
 
-El código está comentado en español, explicando el *por qué* de cada pieza. Mantén ese registro y densidad al escribir código nuevo.
+El código está comentado en español, explicando el *por qué* de cada pieza. Mantén ese registro y esa densidad.
 
 ## Deuda conocida
 
 - El apex `rubensalas.dev` redirige a `www` con **307 (temporal)**; debería ser 308 para consolidar la autoridad en un host. Se cambia en el panel de Vercel, no en el repo.
 - `npm audit` deja 3 avisos transitivos vía `sharp`, solo resolubles con `--force`. Son de la cadena de desarrollo y no viajan al sitio estático.
-- Las secciones con `.reveal` arrancan en `opacity: 0` y dependen del IntersectionObserver: sin JavaScript quedan invisibles. Bajo riesgo, pero se cubre con `@media (scripting: none)`.
+- **En móvil la primera pantalla es toda chrome**: la sidebar se vuelve una cabecera apilada y el `<h1>` no arranca hasta los ~480 px, así que en un teléfono de 640 px de alto el titular queda fuera de vista. Arreglarlo es reestructurar —mover el pie de la sidebar (estado, GitHub, idioma) al final del documento, o compactar la cabecera—, no un retoque.
+- El `<h1>` español va a **7 líneas a 320 px** con interlineado 1.1. La guía tipográfica pide 1.4 a partir de tres líneas, pero 1.4 en un titular de display se ve suelto; la salida real es acortar el titular o bajar `--text-display-sm` en móvil.
 
 ## Despliegue
 
