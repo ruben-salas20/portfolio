@@ -36,7 +36,7 @@ El español es el locale por defecto, sin prefijo. Cambiar eso toca seis sitios 
 
 ## SEO
 
-Todo el `<head>` sale de `src/layouts/Layout.astro` a partir de `Astro.site`: canonical, `hreflang`, Open Graph, Twitter Card y el JSON-LD de `Person`. **`site` lleva `www`**: el apex `rubensalas.dev` redirige a `www.rubensalas.dev`, así que ese es el host canónico, y ponerlo sin `www` propaga el host equivocado a todas las URLs absolutas, incluido `/llms.txt`.
+Todo el `<head>` sale de `src/layouts/Layout.astro` a partir de `Astro.site`: canonical, `hreflang`, Open Graph, Twitter Card y el JSON-LD de `Person`. **`site` lleva `www`**: el apex `rubensalas.dev` redirige con 308 a `www.rubensalas.dev` (se configura en el panel de Vercel, no en el repo), así que ese es el host canónico, y ponerlo sin `www` propaga el host equivocado a todas las URLs absolutas, incluido `/llms.txt`.
 
 `@astrojs/sitemap` genera `/sitemap-index.xml` leyendo el bloque `i18n`. `public/robots.txt` permite a propósito todos los crawlers, incluidos los de IA.
 
@@ -45,10 +45,6 @@ Los iconos de `public/` y `og-image.png` (en español, sin la etiqueta de dispon
 ## Comentarios
 
 El código está comentado en español y explica el porqué de cada pieza. Mantén ese registro y esa densidad.
-
-## Deuda conocida
-
-- El apex redirige a `www` con **307 (temporal)**; debería ser 308. Se cambia en el panel de Vercel, no en el repo.
 
 ## Despliegue
 
