@@ -1,0 +1,18 @@
+---
+/**
+ * Section — una fila de la página: el título en una columna estrecha a la
+ * izquierda y el contenido a la derecha. En móvil las dos columnas se apilan
+ * (ver `.section` en global.css).
+ */
+interface Props {
+  title: string;
+}
+const { title } = Astro.props;
+---
+
+<section class="section">
+  <h2>{title}</h2>
+  <div class="section-body">
+    <slot />
+  </div>
+</section>
