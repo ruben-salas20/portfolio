@@ -1,32 +1,14 @@
 /**
- * Skills agrupadas por categoría.
- * Los nombres de tecnología no se traducen; solo la etiqueta del grupo.
+ * Tecnologías, en dos listas: lo que uso y lo que estoy aprendiendo.
+ * Criterio para `use`: solo lo que sé usar por mi cuenta, sin IA. Lo que aparece
+ * en proyectos dirigidos con IA no entra aquí por el mero hecho de aparecer.
+ * Los nombres de tecnología no se traducen; los temas de `learning` sí.
  */
 
-export interface SkillGroup {
-  label: { en: string; es: string };
-  items: string[];
-}
-
-export const skillGroups: SkillGroup[] = [
-  {
-    label: { en: 'Languages', es: 'Lenguajes' },
-    items: ['Python', 'TypeScript', 'JavaScript', 'Java', 'Bash'],
+export const skills = {
+  use: ['Python', 'Java', 'Docker', 'llama.cpp', 'Ollama', 'Git', 'Linux'],
+  learning: {
+    en: ['agents and tool calling', 'MCP', 'FastAPI', 'LangGraph'],
+    es: ['agentes y tool calling', 'MCP', 'FastAPI', 'LangGraph'],
   },
-  {
-    label: { en: 'Frontend', es: 'Frontend' },
-    items: ['React', 'Astro', 'Tailwind CSS'],
-  },
-  {
-    label: { en: 'Backend & Data', es: 'Backend y Datos' },
-    items: ['Node.js', 'PocketBase', 'SQLite'],
-  },
-  {
-    label: { en: 'AI / ML', es: 'IA / ML' },
-    items: ['Vercel AI SDK', 'Ollama', 'RAG', 'Claude API'],
-  },
-  {
-    label: { en: 'Tooling & Infra', es: 'Tooling e Infra' },
-    items: ['Docker', 'Git', 'Linux (Arch)', 'Neovim', 'Vitest'],
-  },
-];
+};

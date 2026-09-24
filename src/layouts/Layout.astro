@@ -1,8 +1,8 @@
 ---
 /**
  * Layout base — el "esqueleto HTML" que envuelve toda página.
- * Carga las fuentes, el CSS global, define el <head> y aporta
- * el fondo atmosférico y los scripts de interacción.
+ * Carga el CSS global y define el <head>: canonical, hreflang, Open Graph,
+ * Twitter Card y JSON-LD. El único JavaScript es el del botón de tema.
  */
 import '../styles/global.css';
 import { t, contactInfo, type Lang } from '../i18n/ui';
@@ -41,7 +41,7 @@ const personSchema = {
   alternateName: 'Ruben Salas',
   url: site.toString(),
   image: ogImage.toString(),
-  jobTitle: tr.sidebar.role,
+  jobTitle: tr.meta.jobTitle,
   description: tr.meta.description,
   email: `mailto:${contactInfo.email}`,
   address: {
@@ -50,8 +50,7 @@ const personSchema = {
     addressRegion: 'Quindío',
     addressCountry: 'CO',
   },
-  sameAs: [contactInfo.github],
-  worksFor: { '@type': 'Organization', name: 'VAECOS' },
+  sameAs: [contactInfo.github, contactInfo.linkedin],
   knowsLanguage: ['es', 'en'],
 };
 ---
@@ -61,14 +60,34 @@ const personSchema = {
   <head>
     <meta charset="utf-8" />
     <!--
-      Favicon: monograma "rs", el mismo de la sidebar.
+      Favicon: monograma "rs".
       El .ico va primero como respaldo para navegadores sin soporte de SVG;
       los modernos prefieren el SVG por ser el más específico.
     -->
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta name="theme-color" content="#14161b" />
+    <!-- Mismos colores que --bg en global.css, uno por esquema. El script de
+         abajo y el botón de tema los reescriben si hay un tema elegido. -->
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#111111" media="(prefers-color-scheme: dark)" />
+    <!--
+      Tema elegido con el botón de la cabecera. Va inline y en el <head>, no
+      como módulo, para aplicarse antes del primer pintado: si esperara al
+      final del documento, la página parpadearía con el tema del sistema.
+    -->
+    <script is:inline>
+      try {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light' || theme === 'dark') {
+          document.documentElement.dataset.theme = theme;
+          const bg = theme === 'dark' ? '#111111' : '#ffffff';
+          document
+            .querySelectorAll('meta[name="theme-color"]')
+            .forEach((meta) => meta.setAttribute('content', bg));
+        }
+      } catch {}
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
 
@@ -109,104 +128,9 @@ const personSchema = {
       type="application/ld+json"
       set:html={JSON.stringify(personSchema)}
     />
-
-    <!--
-      Fuentes: Fraunces (display), Hanken Grotesk (texto), JetBrains Mono
-      (código). Autoalojadas — las declara @font-face en global.css.
-      Las tres se usan por encima del pliegue, y como la página no carga
-      imágenes ni scripts externos, precargarlas las tres es lo óptimo:
-      arrancan junto al CSS en vez de esperar a que este las descubra.
-    -->
-    <link
-      rel="preload"
-      href="/fonts/fraunces-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/hanken-grotesk-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
-    <link
-      rel="preload"
-      href="/fonts/jetbrains-mono-latin.woff2"
-      as="font"
-      type="font/woff2"
-      crossorigin
-    />
   </head>
 
-  <body class="min-h-screen antialiased">
-    <!--
-      Salto al contenido: antes del <main> hay nueve paradas de teclado
-      (marca, cinco enlaces de nav, GitHub y los dos de idioma), y se repiten
-      en cada carga. Invisible hasta que recibe el foco.
-    -->
-    <a
-      href="#home"
-      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-base"
-    >
-      {tr.a11y.skipToContent}
-    </a>
-
-    <!-- Fondo atmosférico: malla de puntos sutil + halo de color. -->
-    <div aria-hidden="true" class="pointer-events-none fixed inset-0 -z-10">
-      <div
-        class="absolute inset-0"
-        style="background-image: radial-gradient(circle at 1px 1px, rgba(139,192,208,0.055) 1px, transparent 0); background-size: 34px 34px;"
-      >
-      </div>
-      <div
-        class="absolute inset-0"
-        style="background: radial-gradient(ellipse 70% 45% at 78% -8%, rgba(136,192,208,0.10), transparent 62%);"
-      >
-      </div>
-    </div>
-
+  <body>
     <slot />
-
-    <script>
-      // --- Reveal al hacer scroll -----------------------------------------
-      // Cada elemento con clase .reveal aparece cuando entra en pantalla.
-      const revealObserver = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              revealObserver.unobserve(entry.target);
-            }
-          }
-        },
-        { threshold: 0.12 },
-      );
-      document
-        .querySelectorAll('.reveal')
-        .forEach((el) => revealObserver.observe(el));
-
-      // --- Scroll-spy de la navegación ------------------------------------
-      // Resalta en la sidebar el link de la sección visible.
-      const navLinks = document.querySelectorAll<HTMLAnchorElement>('[data-nav]');
-      const sections = document.querySelectorAll<HTMLElement>('section[id]');
-      const spyObserver = new IntersectionObserver(
-        (entries) => {
-          for (const entry of entries) {
-            if (entry.isIntersecting) {
-              navLinks.forEach((link) =>
-                link.classList.toggle(
-                  'nav-active',
-                  link.getAttribute('href') === `#${entry.target.id}`,
-                ),
-              );
-            }
-          }
-        },
-        { rootMargin: '-40% 0px -55% 0px' },
-      );
-      sections.forEach((section) => spyObserver.observe(section));
-    </script>
   </body>
 </html>
