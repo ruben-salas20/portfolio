@@ -1,243 +1,302 @@
-@import "tailwindcss";
-
 /* ============================================================
-   FUENTES — autoalojadas en /public/fonts/.
-   Antes se pedían a Google Fonts, lo que obligaba al navegador a
-   resolver dos dominios más y a esperar un CSS intermedio antes de
-   siquiera descubrir los woff2: tres saltos en serie bloqueando el
-   primer pintado (~2 s en móvil según Lighthouse).
+   Todo el CSS del sitio. Sin framework: la página es una sola
+   columna de texto y cabe en esta hoja.
 
-   Las tres son fuentes variables, así que un solo archivo por familia
-   cubre los pesos 400 y 500 — los únicos que usa el sitio.
-   El `unicode-range` replica el subconjunto "latin" de Google: los
-   caracteres fuera de él (flechas → ↗) caen a la fuente del sistema,
-   igual que ocurría antes.
+   Cada color lleva sus dos valores en `light-dark(claro, oscuro)`, y
+   `color-scheme` decide cuál se usa: por defecto sigue al sistema, y el
+   botón de tema lo fija con `data-theme` en <html> (ver Layout.astro).
+
+   Los pares de texto pasan AA (4.5:1) sobre su --bg: --muted da 5.3:1
+   en claro y 6.7:1 en oscuro. --available es el único color con tono,
+   solo para la etiqueta de disponibilidad: 5.0:1 en claro y 10.8:1 en
+   oscuro. Si cambias uno, vuelve a medir.
    ============================================================ */
-@font-face {
-  font-family: "Fraunces";
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url("/fonts/fraunces-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
+:root {
+  --bg: light-dark(#ffffff, #111111);
+  --fg: light-dark(#1a1a1a, #e8e8e8);
+  --muted: light-dark(#6b6b6b, #9a9a9a);
+  --rule: light-dark(#e5e5e5, #2a2a2a);
+  --available: light-dark(#15803d, #4ade80);
+  color-scheme: light dark;
 }
 
-@font-face {
-  font-family: "Hanken Grotesk";
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url("/fonts/hanken-grotesk-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
+:root[data-theme="light"] {
+  color-scheme: light;
 }
 
-@font-face {
-  font-family: "JetBrains Mono";
-  font-style: normal;
-  font-weight: 400 500;
-  font-display: swap;
-  src: url("/fonts/jetbrains-mono-latin.woff2") format("woff2");
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
-    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
-    U+2212, U+2215, U+FEFF, U+FFFD;
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
-/* ============================================================
-   DESIGN TOKENS — el "ADN" visual del portafolio.
-   En Tailwind v4 los tokens se declaran aquí, en @theme.
-   Cada variable genera utilidades automáticas:
-   --color-accent  ->  bg-accent / text-accent / border-accent
-   ============================================================ */
-@theme {
-  /* Superficies (de más oscuro a más claro) */
-  --color-base: #14161b;
-  --color-surface: #1a1d24;
-  --color-elevated: #21252e;
-  --color-line: #2b303b;
-
-  /* Texto (de más fuerte a más tenue) */
-  --color-ink: #e9ebf1;
-  --color-muted: #9aa1b2;
-  /* El valor anterior (#686f80) daba 3.60:1 sobre el fondo y no llegaba al
-     4.5:1 que exige WCAG AA. Las herramientas automáticas no lo detectaban
-     porque el `backdrop-blur` translúcido de la sidebar les impide resolver
-     un color de fondo sólido. Este tono cumple contra los dos fondos donde
-     se usa: 5.23:1 sobre --color-base y 4.87:1 sobre --color-surface. */
-  --color-faint: #828a9c;
-
-  /* Acentos. Los dos se reparten un significado cada uno, y la regla es la que
-     hace legible la página: si algo está en frost, se puede pulsar; si está en
-     aurora, no. Pintar de frost un texto estático invita a hacer clic donde no
-     hay nada, así que ese tono no sale de lo interactivo. */
-  --color-accent: #88c0d0;   /* frost — solo interactivo: enlaces, hover, foco, nav activa */
-  --color-prompt: #a3be8c;   /* aurora green — solo anotación estática: prompt, kickers, // note, estado */
-
-  /* Tipografía */
-  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
-  --font-sans: "Hanken Grotesk", system-ui, -apple-system, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Code", monospace;
-
-  /* Escala de display — los cinco pasos que usan los titulares. Antes vivían
-     sueltos en las plantillas como `text-[2.4rem]` y compañía, mezclados con
-     la escala de Tailwind, así que no había forma de saber cuál tocaba.
-     Hay exactamente un paso por tamaño en uso: si añades uno, es porque un rol
-     nuevo lo pide. Todo lo que no es titular sigue en la escala de Tailwind,
-     con `text-xs` (12px) como suelo. */
-  --text-display-xs: 1.875rem; /* 30px   — h2 de sección en móvil */
-  --text-display-xs--line-height: 1.1;
-  --text-display-sm: 2.1rem; /* 33.6px — h1 en móvil */
-  --text-display-sm--line-height: 1.1;
-  --text-display-md: 2.4rem; /* 38.4px — h2 de sección */
-  --text-display-md--line-height: 1.1;
-  --text-display-lg: 3rem; /* 48px   — h1 en tablet */
-  --text-display-lg--line-height: 1.1;
-  --text-display-xl: 3.4rem; /* 54.4px — h1 en escritorio */
-  --text-display-xl--line-height: 1.1;
+body {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 64px 16px 96px;
+  background: var(--bg);
+  color: var(--fg);
+  font: 15px/1.6 system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* ============================================================
-   BASE — estilos globales sobre los elementos HTML.
-   ============================================================ */
-@layer base {
-  html {
-    scroll-behavior: smooth;
-    scroll-padding-top: 2rem;
-  }
-
-  body {
-    background-color: var(--color-base);
-    color: var(--color-ink);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-
-  ::selection {
-    background: var(--color-accent);
-    color: var(--color-base);
-  }
-
-  /* Reparto de líneas. `balance` reparte el titular en líneas parejas en vez de
-     dejar la última suelta; `pretty` evita que un párrafo termine con una
-     palabra huérfana. Va sobre el elemento y no como utilidad suelta para que
-     cualquier sección o tarjeta nueva lo herede sin acordarse de pedirlo. */
-  h1,
-  h2,
-  h3 {
-    text-wrap: balance;
-  }
-
-  p {
-    text-wrap: pretty;
-  }
-
-  /* Scrollbar discreta, acorde a la estética */
-  ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-track { background: var(--color-base); }
-  ::-webkit-scrollbar-thumb {
-    background: var(--color-line);
-    border-radius: 999px;
-    border: 2px solid var(--color-base);
-  }
-  ::-webkit-scrollbar-thumb:hover { background: var(--color-faint); }
+h1,
+h2 {
+  text-wrap: balance;
 }
 
-/* ============================================================
-   UTILIDADES PERSONALIZADAS — animaciones y detalles.
-   ============================================================ */
-@layer utilities {
-  /* Reveal en carga de página (con stagger vía animation-delay) */
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(18px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .animate-fade-up {
-    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
-  }
+p {
+  text-wrap: pretty;
+}
 
-  /* Reveal al hacer scroll (lo activa un IntersectionObserver en Layout) */
-  .reveal {
+a {
+  color: inherit;
+  text-underline-offset: 2px;
+}
+
+a:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* ---- Cabecera: nombre a la izquierda, enlaces a la derecha ---- */
+.site-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.site-header h1 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.available {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 6px 0 0;
+  padding: 0 8px;
+  border: 1px solid color-mix(in srgb, var(--available) 45%, transparent);
+  border-radius: 999px;
+  color: var(--available);
+  font-size: 0.75rem;
+}
+
+.available::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.site-header nav {
+  display: flex;
+  gap: 16px;
+}
+
+.site-header nav a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-header nav a:hover {
+  color: var(--fg);
+  text-decoration: underline;
+}
+
+/* Botón de tema: muestra la luna en claro (pasa a oscuro) y el sol en
+   oscuro. Nace con `hidden` y lo destapa el script, así que sin JS no
+   aparece un botón que no hace nada. */
+.theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  padding: 4px;
+  margin: -4px;
+  border: 0;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+  transition: scale 150ms ease-out;
+}
+
+.theme-toggle[hidden] {
+  display: none;
+}
+
+.theme-toggle:hover {
+  color: var(--fg);
+}
+
+.theme-toggle:active {
+  scale: 0.96;
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Los dos iconos viven siempre en el DOM y se cruzan: el que sale se
+   encoge a 0.25 y se desenfoca mientras el otro hace lo inverso. La luna
+   ocupa el sitio y el sol va encima, centrado, sin mover el layout. */
+.theme-toggle svg {
+  display: block;
+  transition-property: opacity, scale, filter;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+}
+
+.theme-toggle .sun {
+  position: absolute;
+  inset: 4px;
+}
+
+.theme-toggle .sun,
+:root[data-theme="dark"] .theme-toggle .moon {
+  opacity: 0;
+  scale: 0.25;
+  filter: blur(4px);
+}
+
+:root[data-theme="dark"] .theme-toggle .sun {
+  opacity: 1;
+  scale: 1;
+  filter: blur(0);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .moon {
     opacity: 0;
-    transform: translateY(28px);
-    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
-                transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    scale: 0.25;
+    filter: blur(4px);
   }
-  .reveal.is-visible {
+
+  :root:not([data-theme="light"]) .theme-toggle .sun {
     opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* Cursor de terminal parpadeante */
-  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-  .cursor-blink { animation: blink 1.15s step-end infinite; }
-
-  /* Estado activo de la navegación (scroll-spy) */
-  .nav-active .nav-index { color: var(--color-accent); }
-  .nav-active .nav-label { color: var(--color-ink); }
-  .nav-active .nav-bar   { width: 1.5rem; background: var(--color-accent); }
-
-  /* Subrayado animado para enlaces de texto */
-  .link-underline {
-    background-image: linear-gradient(var(--color-accent), var(--color-accent));
-    background-size: 0% 1px;
-    background-position: 0 100%;
-    background-repeat: no-repeat;
-    transition: background-size 0.35s cubic-bezier(0.22, 1, 0.36, 1);
-  }
-  /* Es la única regla :hover escrita a mano del sitio; las de Tailwind ya salen
-     envueltas en esta media query. Sin ella, en táctil el subrayado se queda
-     dibujado tras el toque hasta que tocas en otro sitio. */
-  @media (hover: hover) {
-    .link-underline:hover { background-size: 100% 1px; }
-  }
-
-  /* Amplía el área de pulsación sin cambiar el tamaño visible. Estos enlaces de
-     12px miden ~16px de alto, y subirlos con padding descolocaría el subrayado
-     y rompería la densidad de la sidebar.
-     Las áreas extendidas nunca deben solaparse, que es justo lo que WCAG 2.5.8
-     no quiere; por eso el ensanche horizontal es ajustable: el toggle ES/EN
-     tiene sus centros a 34px y con los 8px por lado del resto se pisarían. */
-  .tap-target {
-    position: relative;
-  }
-  .tap-target::after {
-    content: "";
-    position: absolute;
-    /* El valor por defecto va aquí y no en `.tap-target`: declararlo en la
-       clase lo pone a competir con el override en la misma especificidad, y
-       gana el que quede después en la hoja. */
-    inset: -0.5rem var(--tap-inset-x, -0.5rem);
+    scale: 1;
+    filter: blur(0);
   }
 }
 
-/* Respeta a quien desactiva animaciones en su sistema (accesibilidad) */
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  .animate-fade-up,
-  .reveal {
-    animation: none !important;
-    transition: none !important;
-    opacity: 1 !important;
-    transform: none !important;
+  .theme-toggle,
+  .theme-toggle svg {
+    transition: none;
   }
-  /* `animate-ping` es una utilidad de Tailwind, no de @layer utilities de este
-     archivo, y por eso se quedó fuera de esta lista: era la única animación que
-     seguía corriendo con reduced-motion activo. Detenerla deja el halo estático
-     encima del punto sólido, así que el aviso de disponibilidad no se pierde. */
-  .cursor-blink,
-  .animate-ping { animation: none !important; }
 }
 
-/* Sin JavaScript el IntersectionObserver nunca añade `.is-visible`, y las cuatro
-   secciones marcadas con `.reveal` se quedan en opacity: 0 — es decir, la página
-   entera menos el hero. Esto las devuelve visibles cuando no hay scripting. */
-@media (scripting: none) {
-  .reveal {
-    opacity: 1;
-    transform: none;
+/* ---- Secciones: título en columna estrecha, contenido a la derecha ---- */
+.section {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 24px;
+  padding: 24px 0;
+  border-top: 1px solid var(--rule);
+}
+
+.section h2 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.section-body > :first-child {
+  margin-top: 0;
+}
+
+.section-body > :last-child {
+  margin-bottom: 0;
+}
+
+@media (max-width: 600px) {
+  .section {
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
+}
+
+/* ---- Ahora ---- */
+.now {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.now li + li {
+  margin-top: 8px;
+}
+
+.now a,
+.now strong {
+  font-weight: 600;
+}
+
+/* ---- Proyectos ---- */
+.project + .project {
+  margin-top: 28px;
+}
+
+.project p {
+  margin: 4px 0 0;
+}
+
+.project-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.project-name {
+  font-weight: 600;
+}
+
+/* La etiqueta de autoría. La de "escrito por mí" lleva más contraste:
+   es la que distingue lo que programé yo. */
+.tag {
+  padding: 0 6px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.tag.own {
+  border-color: var(--muted);
+  color: var(--fg);
+}
+
+.year {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.project .meta {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* ---- Tecnologías ---- */
+.skills {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px 16px;
+  margin: 0;
+}
+
+.skills dt {
+  color: var(--muted);
+}
+
+.skills dd {
+  margin: 0;
 }

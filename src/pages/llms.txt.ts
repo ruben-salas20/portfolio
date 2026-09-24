@@ -11,30 +11,28 @@
 import type { APIRoute } from 'astro';
 import { t, contactInfo } from '../i18n/ui';
 import { projects } from '../data/projects';
-import { skillGroups } from '../data/skills';
-
-const GITHUB_USER = 'ruben-salas20';
+import { skills } from '../data/skills';
 
 export const GET: APIRoute = ({ site }) => {
   const tr = t('en');
   const base = (site ?? new URL('https://www.rubensalas.dev')).origin;
 
   // Fecha de compilación. Sin esto, afirmaciones con caducidad como
-  // "estudiante de segundo semestre" se leen como vigentes para siempre.
+  // "2nd semester" se leen como vigentes para siempre.
   const lastUpdated = new Date().toISOString().slice(0, 7);
 
   // Un proyecto puede tener repo público, sitio en vivo, ambos o ninguno.
   const projectLines = projects.map((project) => {
-    const links: string[] = [];
-    if (project.repo) {
-      links.push(`repo: https://github.com/${GITHUB_USER}/${project.repo}`);
-    } else {
-      links.push('repo: private');
-    }
+    const links: string[] = [
+      project.repo
+        ? `repo: ${contactInfo.github}/${project.repo}`
+        : 'repo: private',
+    ];
     if (project.live) links.push(`site: ${project.live}`);
+    const authorship = project.writtenByMe ? tr.work.writtenByMe : tr.work.aiDirected;
 
     return [
-      `### ${project.name} (${project.year})`,
+      `### ${project.name} (${project.year}, ${authorship})`,
       '',
       project.desc.en,
       '',
@@ -43,46 +41,41 @@ export const GET: APIRoute = ({ site }) => {
     ].join('\n');
   });
 
-  const skillLines = skillGroups.map(
-    (group) => `- **${group.label.en}**: ${group.items.join(', ')}`,
-  );
+  const nowLines = tr.now.items.map((item) => `- ${item.lead}${item.text}`);
 
   const body = `# Rubén Salas
 
-> ${tr.hero.headline}
+> ${tr.about.intro}
 
 _Last updated: ${lastUpdated}. Time-sensitive claims below (such as the
 current stage of his degree) are accurate as of that date._
 
-${tr.hero.lead}
+This site is available in Spanish at ${base}/ (default) and in English at ${base}/en/.
 
-Based in Armenia, Colombia. This site is available in Spanish at ${base}/ (default)
-and in English at ${base}/en/.
+## How I work
 
-## About
+${tr.about.howIWork}
 
-${tr.about.p1}
+## Now
 
-${tr.about.p2}
-
-${tr.about.p3}
-
-## Skills
-
-${skillLines.join('\n')}
+${nowLines.join('\n')}
 
 ## Projects
 
-${tr.work.lead}
-
-Note on how these were built: ${tr.work.aiNote}
+Each project is labelled "${tr.work.writtenByMe}" or "${tr.work.aiDirected}".
 
 ${projectLines.join('\n\n')}
+
+## Technologies
+
+- ${tr.skills.use}: ${skills.use.join(', ')}
+- ${tr.skills.learning}: ${skills.learning.en.join(', ')}
 
 ## Contact
 
 - Email: ${contactInfo.email}
 - GitHub: ${contactInfo.github}
+- LinkedIn: ${contactInfo.linkedin}
 `;
 
   return new Response(body, {
