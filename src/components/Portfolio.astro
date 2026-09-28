@@ -49,6 +49,10 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
     </nav>
   </header>
 
+  <!-- Franja de la escena para móvil y tableta; en escritorio la escena va
+       en los márgenes (ver Scene.astro). -->
+  <div class="zone zone-mobile" aria-hidden="true" hidden></div>
+
   <main>
     <Section title={tr.about.title} scene="left">
       <p>{tr.about.intro}</p>
