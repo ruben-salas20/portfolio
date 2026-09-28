@@ -67,6 +67,16 @@ export const ui = {
       use: 'I use',
       learning: 'Learning',
     },
+    // Bocadillos de la escena de los márgenes: frases de una o dos palabras.
+    scene: {
+      name: 'Rubén',
+      assign: { wall: 'It broke!', sign: 'A 404!', bug: 'A bug!' },
+      going: 'On it!',
+      done: 'Done!',
+      self: "I'll do this one",
+      selfDone: 'Like this?',
+      approve: 'Perfect!',
+    },
   },
 
   es: {
@@ -122,6 +132,15 @@ export const ui = {
       title: 'Tecnologías',
       use: 'Uso',
       learning: 'Aprendiendo',
+    },
+    scene: {
+      name: 'Rubén',
+      assign: { wall: '¡Se rompió!', sign: '¡Un 404!', bug: '¡Un bug!' },
+      going: '¡Voy!',
+      done: '¡Listo!',
+      self: 'Este lo hago yo',
+      selfDone: '¿Así?',
+      approve: '¡Perfecto!',
     },
   },
 } as const;

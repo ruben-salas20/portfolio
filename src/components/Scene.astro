@@ -1,0 +1,41 @@
+---
+/**
+ * Scene — arranca la escena en pixel art de los márgenes. Las franjas donde
+ * viven los personajes las pone cada `Section` con su prop `scene`; aquí solo
+ * se pasan los textos de los bocadillos en el idioma de la página y se lanza
+ * src/scripts/scene.ts.
+ */
+import { t, type Lang } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<script is:inline type="application/json" id="scene-text" set:html={JSON.stringify(t(lang).scene)} />
+
+<script>
+  import { startScene, type SceneText } from '../scripts/scene';
+
+  const text: SceneText = JSON.parse(document.getElementById('scene-text')!.textContent!);
+  const zones = [...document.querySelectorAll<HTMLElement>('.zone')];
+
+  // Solo corre mientras los márgenes existen: por debajo de ese ancho las
+  // franjas están ocultas y un bucle de animación sería trabajo tirado.
+  const wide = matchMedia('(min-width: 1280px)');
+  let stop: (() => void) | null = null;
+
+  function sync() {
+    if (wide.matches && !stop) {
+      stop = startScene(zones, text);
+    } else if (!wide.matches && stop) {
+      stop();
+      stop = null;
+      zones.forEach((zone) => zone.replaceChildren());
+    }
+  }
+
+  sync();
+  wide.addEventListener('change', sync);
+</script>
