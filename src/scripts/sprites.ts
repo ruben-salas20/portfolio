@@ -172,9 +172,13 @@ export const clawd = {
 };
 
 // ---- Fallos y sus versiones arregladas ----------------------------------
+// La pared y el cartel tienen relleno blanco fijo, así que su trazo también
+// va fijo y oscuro (`outline`): con `#`, que sigue al tema, en modo oscuro
+// quedaba casi blanco sobre blanco y el 404 no se leía. El bug no tiene
+// relleno y sí sigue al tema.
 
 export const wall = {
-  broken: [
+  broken: outline([
     '############',
     '#wwwww#wwww#',
     '######..####',
@@ -182,8 +186,8 @@ export const wall = {
     '####..######',
     '#wwww.#wwww#',
     '####...#####',
-  ],
-  fixed: [
+  ]),
+  fixed: outline([
     '############',
     '#wwwww#wwww#',
     '############',
@@ -191,7 +195,7 @@ export const wall = {
     '############',
     '#wwwww#wwww#',
     '############',
-  ],
+  ]),
 };
 
 // Cartel con un código HTTP: el fallo es un 404 y el arreglo, un 200.
@@ -201,17 +205,23 @@ const digits: Record<string, string[]> = {
   '4': ['#.#', '#.#', '###', '..#', '..#'],
 };
 
-function sign(code: string): Grid {
+function sign(code: string): string[] {
   const rows = digits[code[0]].map((_, y) =>
     ('#w' + [...code].map((d) => digits[d][y]).join('w') + 'w#').replaceAll('.', 'w'),
   );
   const edge = '#'.repeat(15);
   const blank = '#' + 'w'.repeat(13) + '#';
-  const post = '......###......';
-  return [edge, blank, ...rows, blank, edge, post, post, post];
+  return [edge, blank, ...rows, blank, edge];
 }
 
-export const signs = { broken: sign('404'), fixed: sign('200') };
+// El palo va sin relleno, así que sigue al tema (`#`) en vez de ir fijo:
+// oscuro sobre oscuro no se vería.
+const post = Array(3).fill('......###......');
+
+export const signs = {
+  broken: [...outline(sign('404')), ...post],
+  fixed: [...outline(sign('200')), ...post],
+};
 
 export const bug = {
   a: ['.#...#.', '..###..', '#######', '.#####.', '#.#.#.#'],
