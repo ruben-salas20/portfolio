@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Portafolio personal de Rubén Salas: una sola página estática en Astro, publicada en español (`/`) e inglés (`/en/`). Sin framework de CSS; el único JavaScript es el del botón de tema.
+Portafolio personal de Rubén Salas: una sola página estática en Astro, publicada en español (`/`) e inglés (`/en/`). Sin framework de CSS; el JavaScript se limita al botón de tema y a la escena en pixel art de los márgenes.
 
 ## Validación
 
@@ -18,13 +18,22 @@ El sitio es una hoja de vida: dice lo que Rubén sabe y hace, nada más. Todo ca
 
 ## Arquitectura
 
-`src/components/Portfolio.astro` ensambla la página entera (cabecera + cuatro `Section`). Las páginas de `src/pages/` son cascarones de una línea que le pasan `lang`. Añadir o reordenar secciones se hace ahí, una sola vez.
+`src/components/Portfolio.astro` ensambla la página entera (cabecera + cuatro `Section` + `Scene`). Las páginas de `src/pages/` son cascarones de una línea que le pasan `lang`. Añadir o reordenar secciones se hace ahí, una sola vez.
 
 **Copia vs. datos.** `src/i18n/ui.ts` es la única fuente de la copia de la interfaz: ramas `en` y `es` con claves espejo, tipadas `as const`, así que una clave que falte en un idioma es error de tipos. Cada componente recibe `lang` y resuelve sus textos con `t(lang)`. Lo que es lista va en `src/data/`, traducido por campo (`desc: { en, es }`) en vez de por rama. `repo: null` significa repositorio privado: la tarjeta muestra el aviso en vez de enlazar a un 404.
 
 **`/llms.txt`** (`src/pages/llms.txt.ts`) se genera de `ui.ts` y `src/data/`, así que se actualiza solo. Si añades una clave o un campo nuevo, decide si también debe salir ahí.
 
-**Estilos.** Todo vive en `src/styles/global.css`: cuatro colores neutros (`--bg`, `--fg`, `--muted`, `--rule`) más `--available`, cada uno con sus dos valores en `light-dark(claro, oscuro)`, y la fuente del sistema. `--available` (verde) es el único color con tono y lo usa solo la etiqueta "Disponible para trabajar" bajo el nombre; todo lo demás es neutro. Cualquier cambio a un color de texto se valida a mano contra su `--bg` con el mínimo AA de 4.5:1; los ratios actuales están en el comentario de cabecera del archivo. Los `theme-color` de `Layout.astro` repiten los dos `--bg`.
+**Estilos.** Todo vive en `src/styles/global.css`: cuatro colores neutros (`--bg`, `--fg`, `--muted`, `--rule`) más `--available`, cada uno con sus dos valores en `light-dark(claro, oscuro)`, y la fuente del sistema. `--available` (verde) es el único color con tono de la interfaz y lo usa solo la etiqueta "Disponible para trabajar"; el color de los personajes de la escena vive aparte, en la paleta de `sprites.ts`. Cualquier cambio a un color de texto se valida a mano contra su `--bg` con el mínimo AA de 4.5:1; los ratios actuales están en el comentario de cabecera del archivo. Los `theme-color` de `Layout.astro` repiten los dos `--bg`.
+
+**Escena de los márgenes.** En los espacios blancos a los lados del texto, Rubén manda a varios Clawd (la mascota de Anthropic, usada tal cual por decisión de Rubén) a arreglar fallos que aparecen de vez en cuando, y a veces arregla uno él mientras un Clawd lo revisa: ilustra el párrafo "Cómo trabajo", así que si cambia esa historia, la escena también. Piezas:
+
+- Las franjas las pone cada `Section` con la prop `scene="left" | "right"`. **La primera franja de la página es la de Rubén.** Hoy hay tres (Sobre mí, Ahora, Proyectos); Tecnologías no lleva porque al cargar queda fuera de pantalla y los bocadillos dirigidos a ella no se entendían.
+- `src/scripts/sprites.ts`: cada sprite es una cuadrícula de texto, un carácter por píxel, con la paleta al principio del archivo. Rubén va a 2 px por píxel y con color (tomado de su referencia); el resto, a 3 px. Tras editar una cuadrícula, comprueba que todas sus filas midan lo mismo.
+- `src/scripts/scene.ts`: el bucle y una máquina de estados por personaje. Los tiempos (cada cuánto aparece un fallo, cuánto dura un arreglo) son constantes al principio del archivo.
+- Los bocadillos salen de `ui.ts` (clave `scene`) y los pasa `Scene.astro`: frases de una o dos palabras.
+- Solo existe con la ventana a **1280 px o más**, en el CSS y en el `matchMedia` de `Scene.astro` a la vez. No bajes el umbral: la media query cuenta la barra de scroll y con menos la franja izquierda asoma fuera de pantalla.
+- Con `prefers-reduced-motion` se pinta una escena quieta, sin bucle. Es decoración: las franjas llevan `aria-hidden`.
 
 **Tema claro/oscuro.** Por defecto sigue al sistema (`color-scheme: light dark`). El botón de la cabecera fija `data-theme` en `<html>` y lo guarda en `localStorage`; un script inline en el `<head>` de `Layout.astro` lo reaplica antes del primer pintado para que no parpadee. El botón nace `hidden` y lo destapa su script en `Portfolio.astro`: sin JS no aparece y la página sigue al sistema. Un color nuevo se declara con `light-dark()`; declararlo con un valor fijo lo deja igual en los dos temas.
 

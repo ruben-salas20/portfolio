@@ -7,6 +7,7 @@
 import Layout from '../layouts/Layout.astro';
 import Section from './Section.astro';
 import ProjectCard from './ProjectCard.astro';
+import Scene from './Scene.astro';
 import { t, contactInfo, type Lang } from '../i18n/ui';
 import { projects } from '../data/projects';
 import { skills } from '../data/skills';
@@ -49,12 +50,12 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
   </header>
 
   <main>
-    <Section title={tr.about.title}>
+    <Section title={tr.about.title} scene="left">
       <p>{tr.about.intro}</p>
       <p>{tr.about.howIWork}</p>
     </Section>
 
-    <Section title={tr.now.title}>
+    <Section title={tr.now.title} scene="right">
       <ul class="now">
         {
           tr.now.items.map((item) => (
@@ -66,7 +67,7 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
       </ul>
     </Section>
 
-    <Section title={tr.work.title}>
+    <Section title={tr.work.title} scene="left">
       {projects.map((project) => <ProjectCard project={project} lang={lang} />)}
     </Section>
 
@@ -79,6 +80,8 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
       </dl>
     </Section>
   </main>
+
+  <Scene lang={lang} />
 </Layout>
 
 <script>

@@ -191,8 +191,96 @@ a:focus-visible {
   }
 }
 
+/* ---- Escena de los márgenes (Scene.astro + scripts/scene.ts) ----
+   Cada sección con `scene` lleva una franja a un lado de la columna de
+   texto, con su línea de suelo. Solo aparecen cuando caben: la página
+   (800 px con su padding) + 2 × (franja de 220 + separación de 24) =
+   1256 px de layout. El umbral es 1280 porque la media query cuenta la
+   barra de scroll: con 1260 la franja izquierda asomaba fuera de pantalla. */
+.zone {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .zone {
+    display: block;
+    position: absolute;
+    top: 0;
+    width: 220px;
+    height: 120px;
+    border-bottom: 1px solid var(--rule);
+    pointer-events: none;
+  }
+}
+
+.zone[data-side="left"] {
+  right: calc(100% + 24px);
+}
+
+.zone[data-side="right"] {
+  left: calc(100% + 24px);
+}
+
+.sprite {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  transition: opacity 300ms;
+}
+
+.sprite svg {
+  display: block;
+}
+
+/* Rubén es el único personaje que responde al cursor: muestra su nombre.
+   En oscuro, un halo claro recorta su contorno y su pelo, que son oscuros. */
+.sprite-ruben {
+  pointer-events: auto;
+}
+
+.sprite-ruben svg {
+  filter: drop-shadow(0 0 1px light-dark(transparent, #ffffff80));
+}
+
+.sprite-ruben::before {
+  content: attr(data-name);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  translate: -50% 0;
+  padding: 0 6px;
+  border: 1px solid var(--fg);
+  background: var(--bg);
+  font-size: 0.75rem;
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 150ms;
+}
+
+.sprite-ruben:hover::before {
+  opacity: 1;
+}
+
+/* Bocadillos: frases de una o dos palabras encima de quien habla. */
+.bubble {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 1px 6px;
+  border: 1px solid var(--fg);
+  background: var(--bg);
+  color: var(--fg);
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.bubble[hidden] {
+  display: none;
+}
+
 /* ---- Secciones: título en columna estrecha, contenido a la derecha ---- */
 .section {
+  position: relative;
   display: grid;
   grid-template-columns: 9rem 1fr;
   gap: 24px;
