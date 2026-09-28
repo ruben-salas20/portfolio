@@ -191,25 +191,40 @@ a:focus-visible {
   }
 }
 
-/* ---- Escena de los márgenes (Scene.astro + scripts/scene.ts) ----
-   Cada sección con `scene` lleva una franja a un lado de la columna de
-   texto, con su línea de suelo. Solo aparecen cuando caben: la página
-   (800 px con su padding) + 2 × (franja de 220 + separación de 24) =
-   1256 px de layout. El umbral es 1280 porque la media query cuenta la
-   barra de scroll: con 1260 la franja izquierda asomaba fuera de pantalla. */
+/* ---- Escena en pixel art (Scene.astro + scripts/scene.ts) ----
+   Dos juegos de franjas con su línea de suelo, y nunca se ven a la vez.
+
+   Márgenes (.zone-margin): una franja a un lado de la columna de texto en
+   cada sección con `scene`. Solo caben desde que la página (800 px con su
+   padding) + 2 × (franja de 220 + separación de 24) = 1256 px de layout.
+   El umbral es 1280 porque la media query cuenta la barra de scroll: con
+   1260 la franja izquierda asomaba fuera de pantalla.
+
+   Móvil (.zone-mobile): por debajo de ese ancho, una sola franja entre la
+   cabecera y "Sobre mí". Su suelo es el borde superior de esa sección. Nace
+   con `hidden` y la destapa el script: sin JS no queda un hueco vacío. */
 .zone {
   display: none;
+  pointer-events: none;
 }
 
 @media (min-width: 1280px) {
-  .zone {
+  .zone-margin {
     display: block;
     position: absolute;
     top: 0;
     width: 220px;
     height: 120px;
     border-bottom: 1px solid var(--rule);
-    pointer-events: none;
+  }
+}
+
+@media (max-width: 1279.98px) {
+  .zone-mobile:not([hidden]) {
+    display: block;
+    position: relative;
+    height: 120px;
+    margin-top: -24px;
   }
 }
 
@@ -257,7 +272,8 @@ a:focus-visible {
   transition: opacity 150ms;
 }
 
-.sprite-ruben:hover::before {
+.sprite-ruben:hover::before,
+.sprite-ruben.show-name::before {
   opacity: 1;
 }
 

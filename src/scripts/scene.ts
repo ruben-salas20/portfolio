@@ -9,7 +9,12 @@
  * horizontal. Cada personaje es una máquina de estados pequeña:
  * idle → going → working → returning, más wander (pasear) y watching (mirar).
  *
- * Con "reducir movimiento" se pinta una escena quieta y no hay bucle.
+ * En escritorio hay varias franjas en los márgenes; en móvil, una sola bajo
+ * la cabecera (ver Scene.astro). Con una sola franja, Rubén tiene dos Clawd
+ * en vez de uno, para que la escena no se quede en un diálogo de dos.
+ *
+ * El bucle se pausa mientras ninguna franja está en pantalla. Con "reducir
+ * movimiento" se pinta una escena quieta y no hay bucle.
  */
 import {
   bang,
@@ -40,10 +45,11 @@ const SPEED = 40; // px por segundo al caminar
 const FIX_MS = 2400; // lo que dura un arreglo
 const STEP_MS = 160; // un paso de la animación de caminar
 const SAY_MS = 1800; // lo que dura un bocadillo en pantalla
+const CHAT_MS = 1100; // turno de cada uno en el "¿Así?" / "¡Perfecto!"
 const SPAWN_MS: [number, number] = [7000, 12000]; // cada cuánto aparece un fallo
 const WANDER_MS: [number, number] = [4000, 9000]; // cada cuánto pasea un Clawd
 
-type State = 'idle' | 'wander' | 'going' | 'working' | 'returning' | 'watching';
+type State = 'idle' | 'wander' | 'going' | 'working' | 'returning' | 'watching' | 'lingering';
 type Kind = 'wall' | 'sign' | 'bug';
 
 interface Zone {
@@ -125,9 +131,11 @@ const rand = (min: number, max: number) => min + Math.random() * (max - min);
 const pick = <T>(items: readonly T[]) => items[Math.floor(Math.random() * items.length)];
 
 export function startScene(zoneEls: HTMLElement[], text: SceneText) {
+  const single = zoneEls.length === 1;
   const zones: Zone[] = zoneEls.map((el, i) => {
     const width = el.clientWidth;
-    return { el, width, range: i === 0 ? [120, width] : [0, width] };
+    // En la franja de Rubén los fallos aparecen pasados él y sus Clawd.
+    return { el, width, range: i === 0 ? [single ? 160 : 120, width] : [0, width] };
   });
   const [home] = zones;
   const now0 = performance.now();
@@ -138,8 +146,15 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
     sprite.x = x;
     if (isRuben) {
       // La etiqueta con el nombre sale al pasar el cursor (ver global.css).
+      // En pantallas táctiles no hay cursor: la muestra un toque, un rato.
       sprite.el.classList.add('sprite-ruben');
       sprite.el.dataset.name = text.name;
+      let hideName = 0;
+      sprite.el.addEventListener('click', () => {
+        sprite.el.classList.add('show-name');
+        clearTimeout(hideName);
+        hideName = window.setTimeout(() => sprite.el.classList.remove('show-name'), 1500);
+      });
     }
     const bubble = document.createElement('div');
     bubble.className = 'bubble';
@@ -166,6 +181,7 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
 
   const me = walker(home, 8, true);
   const claudes = zones.map((zone) => walker(zone, zone === home ? 64 : rand(20, zone.width - 60), false));
+  if (single) claudes.push(walker(home, 110, false));
   const walkers = [me, ...claudes];
   let glitches: Glitch[] = [];
   let homeSpawned = 0;
@@ -249,7 +265,10 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
         } else if (!w.isRuben && (now + w.blinkOffset) % 3200 < 140) {
           w.sprite.frame = clawd.blink;
         }
-        if (now >= w.nextWander && now >= pointUntil) {
+        // Con un fallo abierto en su franja nadie pasea: el que pasea acababa
+        // encima de Rubén o del Clawd que trabaja.
+        const busy = glitches.some((other) => other.zone === w.zone);
+        if (now >= w.nextWander && now >= pointUntil && !busy) {
           w.spot = rand(...w.roam);
           w.state = 'wander';
         }
@@ -287,14 +306,26 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
           fix(g);
           w.state = 'returning';
           if (w.isRuben) {
-            // Rubén pregunta y el Clawd que miraba le da el visto bueno.
-            say(w, text.selfDone);
+            // Rubén pregunta y el Clawd que miraba le da el visto bueno, por
+            // turnos y quietos: si volvieran a casa mientras hablan, el Clawd
+            // cruzaría por debajo de Rubén y los bocadillos se montarían.
+            say(w, text.selfDone, CHAT_MS);
+            w.state = 'lingering';
+            w.until = now + CHAT_MS * 2;
             const watcher = claudes.find((c) => c.target === g);
-            if (watcher) setTimeout(() => say(watcher, text.approve), 900);
+            if (watcher) {
+              watcher.state = 'lingering';
+              watcher.until = now + CHAT_MS * 2;
+              setTimeout(() => say(watcher, text.approve, CHAT_MS), CHAT_MS);
+            }
           } else {
             say(w, text.done);
           }
         }
+        break;
+      }
+      case 'lingering': {
+        if (now >= w.until) w.state = 'returning';
         break;
       }
       case 'watching': {
@@ -319,7 +350,10 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
     for (const g of glitches) {
       if (g.taken || g.fixed) continue;
       // Un Clawd que pasea también puede atender: deja el paseo a medias.
-      const helper = claudes.find((c) => c.zone === g.zone && available(c));
+      // Si hay varios libres, va el más cercano al fallo.
+      const helper = claudes
+        .filter((c) => c.zone === g.zone && available(c))
+        .sort((a, b) => Math.abs(a.sprite.x - g.body.x) - Math.abs(b.sprite.x - g.body.x))[0];
       if (!helper) continue;
       if (g.byRuben) {
         if (!available(me)) continue;
@@ -379,9 +413,9 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
 
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const target = zones[1] ?? home;
-    spawn({ zone: target, kind: 'sign', x: 40 });
+    spawn({ zone: target, kind: 'sign', x: target === home ? home.range[0] + 30 : 40 });
     const [sign] = glitches;
-    const helper = claudes[zones.indexOf(target)];
+    const helper = claudes.filter((c) => c.zone === target).at(-1)!;
     helper.sprite.x = sign.body.x + sign.body.width + 2;
     helper.sprite.mirror = true;
     me.sprite.frame = ruben.point;
@@ -397,6 +431,7 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
   let raf = 0;
   let last = now0;
   let nextSpawn = last + 2500;
+  const onScreen = new Set<Element>();
 
   function tick(now: number) {
     // Tope al paso: al volver de una pestaña en segundo plano no hay saltos.
@@ -410,10 +445,26 @@ export function startScene(zoneEls: HTMLElement[], text: SceneText) {
     updateGlitches(dt, now);
     for (const w of walkers) updateWalker(w, dt, now);
     render(now);
-    raf = requestAnimationFrame(tick);
+    raf = onScreen.size > 0 ? requestAnimationFrame(tick) : 0;
   }
 
+  // Pausa mientras ninguna franja se ve: al hacer scroll más allá de ellas
+  // (sobre todo en móvil) la animación seguiría gastando batería sin público.
+  const observer = new IntersectionObserver((entries) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) onScreen.add(entry.target);
+      else onScreen.delete(entry.target);
+    }
+    if (onScreen.size > 0 && raf === 0) {
+      last = performance.now();
+      raf = requestAnimationFrame(tick);
+    }
+  });
+  zones.forEach((zone) => observer.observe(zone.el));
+
   render(now0);
-  raf = requestAnimationFrame(tick);
-  return () => cancelAnimationFrame(raf);
+  return () => {
+    observer.disconnect();
+    cancelAnimationFrame(raf);
+  };
 }

@@ -1,9 +1,10 @@
 ---
 /**
- * Scene — arranca la escena en pixel art de los márgenes. Las franjas donde
- * viven los personajes las pone cada `Section` con su prop `scene`; aquí solo
- * se pasan los textos de los bocadillos en el idioma de la página y se lanza
- * src/scripts/scene.ts.
+ * Scene — arranca la escena en pixel art. Hay dos juegos de franjas y nunca
+ * se ven a la vez: desde 1280 px, las de los márgenes (`.zone-margin`, las
+ * pone cada `Section` con su prop `scene`); por debajo, una sola bajo la
+ * cabecera (`.zone-mobile`, en Portfolio.astro). Aquí se elige el juego según
+ * el ancho y se pasan los textos de los bocadillos en el idioma de la página.
  */
 import { t, type Lang } from '../i18n/ui';
 
@@ -19,21 +20,24 @@ const { lang } = Astro.props;
   import { startScene, type SceneText } from '../scripts/scene';
 
   const text: SceneText = JSON.parse(document.getElementById('scene-text')!.textContent!);
-  const zones = [...document.querySelectorAll<HTMLElement>('.zone')];
+  const margins = [...document.querySelectorAll<HTMLElement>('.zone-margin')];
+  const mobile = [...document.querySelectorAll<HTMLElement>('.zone-mobile')];
 
-  // Solo corre mientras los márgenes existen: por debajo de ese ancho las
-  // franjas están ocultas y un bucle de animación sería trabajo tirado.
+  // El mismo umbral que en global.css: ver el comentario de `.zone`.
   const wide = matchMedia('(min-width: 1280px)');
   let stop: (() => void) | null = null;
+  let running: HTMLElement[] = [];
 
+  // Al cruzar el umbral (girar una tableta, redimensionar la ventana) se
+  // desmonta la escena de un juego de franjas y se monta en el otro.
   function sync() {
-    if (wide.matches && !stop) {
-      stop = startScene(zones, text);
-    } else if (!wide.matches && stop) {
-      stop();
-      stop = null;
-      zones.forEach((zone) => zone.replaceChildren());
-    }
+    const zones = wide.matches ? margins : mobile;
+    mobile.forEach((zone) => (zone.hidden = wide.matches));
+    if (zones === running) return;
+    stop?.();
+    running.forEach((zone) => zone.replaceChildren());
+    running = zones;
+    stop = zones.length > 0 ? startScene(zones, text) : null;
   }
 
   sync();
