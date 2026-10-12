@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Portafolio de Rubén Salas: un sitio estático en Astro con una portada y una sección de artículos, en español (`/`) e inglés (`/en/`), sin framework de CSS. El JavaScript de cliente se limita al botón de tema y a la escena en pixel art. Casi todos los porqués están en los comentarios del código; aquí va lo que no se deduce de él.
+Portafolio de Rubén Salas: un sitio estático en Astro con una portada y una sección de artículos, en español (`/`) e inglés (`/en/`), sin framework de CSS. El JavaScript de cliente se limita al botón de tema, a la escena en pixel art y a los reproductores de los artículos. Casi todos los porqués están en los comentarios del código; aquí va lo que no se deduce de él.
 
 ## Validación
 
@@ -22,7 +22,9 @@ El sitio es una hoja de vida: dice lo que Rubén sabe y hace, nada más. Aplica 
 - **Secciones**: se añaden y se reordenan solo en `src/components/Portfolio.astro`. Las páginas de `src/pages/` solo le pasan `lang`.
 - **Textos de la interfaz**: solo en `src/i18n/ui.ts`, con la misma clave en `es` y en `en`.
 - **Listas** (proyectos, tecnologías): en `src/data/`, traducidas por campo (`desc: { en, es }`). `repo: null` marca un repositorio privado.
-- **Artículos**: un `.md` por artículo en `src/content/articles/`; el nombre del archivo es la URL. Se escriben solo en español y se publican en `/articulos/` y en `/en/articles/`. La versión `/en/` lleva la interfaz en inglés y un aviso del idioma, y su canonical apunta a la española. Con `draft: true` el artículo solo sale en `npm run dev`.
+- **Artículos**: una carpeta por artículo en `src/content/articles/`, con el texto en `index.md` y sus imágenes al lado; el nombre de la carpeta es la URL. Se escriben solo en español y se publican en `/articulos/` y en `/en/articles/`. La versión `/en/` lleva la interfaz en inglés y un aviso del idioma, y su canonical apunta a la española. Con `draft: true` el artículo solo sale en `npm run dev`.
+- **Multimedia de los artículos**: imágenes y GIF, en la carpeta del artículo. Los audios, en `public/articulos/<carpeta>/`, porque Astro no procesa las rutas que van dentro de HTML. Los vídeos, en YouTube: un enlace solo en su párrafo se convierte en portada (`src/plugins/youtube.mjs`). Ese plugin es de Sätteri, el procesador de Markdown de Astro 7; los de remark o rehype no funcionan sin instalar el antiguo.
+- **Plantilla** (`src/content/articles/plantilla/`): catálogo de todo lo que admite un artículo, con cómo se escribe y cómo queda. Es la referencia de Rubén: déjala siempre con `draft: true`, y si un artículo admite algo nuevo, añádelo ahí.
 - **`/llms.txt`**: se genera solo a partir de `ui.ts`, `src/data/` y los artículos. Si añades una clave o un campo, decide si debe salir ahí.
 
 ## Colores

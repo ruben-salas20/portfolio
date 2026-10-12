@@ -69,6 +69,8 @@ export const ui = {
       empty: 'No articles yet.',
       back: 'All articles',
       onlySpanish: 'This article is only available in Spanish.',
+      // Reproductor de audio de los artículos (ver src/scripts/media.ts).
+      player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
     },
     // Bocadillos de la escena de los márgenes: frases de una o dos palabras.
     scene: {
@@ -138,6 +140,7 @@ export const ui = {
       empty: 'Aún no hay artículos.',
       back: 'Todos los artículos',
       onlySpanish: 'Este artículo solo está en español.',
+      player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
     },
     scene: {
       name: 'Rubén',
