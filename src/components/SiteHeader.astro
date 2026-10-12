@@ -7,7 +7,7 @@
  * título de la página, así que el nombre pasa a ser un enlace a la portada.
  */
 import { t, contactInfo, type Lang } from '../i18n/ui';
-import { articlesPath } from '../data/articles';
+import { articlesPath, getArticles } from '../data/articles';
 
 interface Props {
   lang: Lang;
@@ -18,6 +18,9 @@ interface Props {
 const { lang, otherLangHref, home = false } = Astro.props;
 const tr = t(lang);
 const homeHref = lang === 'es' ? '/' : '/en/';
+// Sin artículos publicados, el enlace llevaría a una lista vacía. En
+// `npm run dev` los borradores cuentan, así que ahí sale siempre.
+const hasArticles = (await getArticles()).length > 0;
 ---
 
 <header class="site-header">
@@ -34,7 +37,7 @@ const homeHref = lang === 'es' ? '/' : '/en/';
     <p class="available">{tr.header.available}</p>
   </div>
   <nav>
-    <a href={articlesPath[lang]}>{tr.header.articles}</a>
+    {hasArticles && <a href={articlesPath[lang]}>{tr.header.articles}</a>}
     <a href={`mailto:${contactInfo.email}`}>{tr.header.email}</a>
     <a href={contactInfo.github}>GitHub</a>
     <a href={contactInfo.linkedin}>LinkedIn</a>

@@ -148,6 +148,26 @@ a:focus-visible {
   outline-offset: 2px;
 }
 
+/* En móvil los enlaces bajan a su propia fila y el botón sube a la esquina,
+   a la altura del nombre. Si siguiera al final de los enlaces, en pantallas
+   estrechas o con letra más ancha caería solo a una tercera fila. */
+@media (max-width: 600px) {
+  .site-header {
+    position: relative;
+  }
+
+  .site-header nav {
+    flex-basis: 100%;
+    column-gap: 12px;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 4px;
+    right: 0;
+  }
+}
+
 /* Los dos iconos viven siempre en el DOM y se cruzan: el que sale se
    encoge a 0.25 y se desenfoca mientras el otro hace lo inverso. La luna
    ocupa el sitio y el sol va encima, centrado, sin mover el layout. */
