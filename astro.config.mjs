@@ -12,8 +12,8 @@ export default defineConfig({
   site: 'https://www.rubensalas.dev',
 
   // Genera /sitemap-index.xml declarando las dos locales y sus alternates.
-  // La integración lee el bloque `i18n` de abajo, así que no hay que
-  // repetir aquí la lista de idiomas cuando cambie.
+  // La integración no lee el bloque `i18n` de abajo: repite aquí los
+  // idiomas, así que si cambian hay que tocar los dos bloques.
   integrations: [
     sitemap({
       i18n: {
