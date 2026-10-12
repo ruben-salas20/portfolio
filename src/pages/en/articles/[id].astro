@@ -1,0 +1,15 @@
+---
+// Página "/en/articles/<slug>/" — el mismo artículo, con la interfaz en inglés.
+import type { GetStaticPaths } from 'astro';
+import Article from '../../../components/Article.astro';
+import { getArticles } from '../../../data/articles';
+
+export const getStaticPaths = (async () => {
+  const articles = await getArticles();
+  return articles.map((article) => ({ params: { id: article.id }, props: { article } }));
+}) satisfies GetStaticPaths;
+
+const { article } = Astro.props;
+---
+
+<Article lang="en" article={article} />

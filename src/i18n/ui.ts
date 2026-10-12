@@ -21,6 +21,7 @@ export const ui = {
     },
     header: {
       available: 'Available for work',
+      articles: 'Articles',
       email: 'Email',
       otherLang: 'ES',
       themeToggle: 'Switch between light and dark mode',
@@ -62,6 +63,13 @@ export const ui = {
       use: 'I use',
       learning: 'Learning',
     },
+    articles: {
+      title: 'Articles',
+      description: 'Articles by Rubén Salas, in Spanish.',
+      empty: 'No articles yet.',
+      back: 'All articles',
+      onlySpanish: 'This article is only available in Spanish.',
+    },
     // Bocadillos de la escena de los márgenes: frases de una o dos palabras.
     scene: {
       name: 'Rubén',
@@ -83,6 +91,7 @@ export const ui = {
     },
     header: {
       available: 'Disponible para trabajar',
+      articles: 'Artículos',
       email: 'Correo',
       otherLang: 'EN',
       themeToggle: 'Cambiar entre modo claro y oscuro',
@@ -122,6 +131,13 @@ export const ui = {
       title: 'Tecnologías',
       use: 'Uso',
       learning: 'Aprendiendo',
+    },
+    articles: {
+      title: 'Artículos',
+      description: 'Artículos de Rubén Salas.',
+      empty: 'Aún no hay artículos.',
+      back: 'Todos los artículos',
+      onlySpanish: 'Este artículo solo está en español.',
     },
     scene: {
       name: 'Rubén',

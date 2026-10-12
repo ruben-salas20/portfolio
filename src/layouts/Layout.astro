@@ -11,25 +11,38 @@ interface Props {
   title: string;
   description: string;
   lang: Lang;
+  /**
+   * Ruta de esta página en cada idioma, para los hreflang. Con `null` no se
+   * declaran alternativas (ver `canonicalPath`).
+   */
+  paths?: Record<Lang, string> | null;
+  /** Si otra página tiene el mismo contenido, su ruta. */
+  canonicalPath?: string;
 }
 
-const { title, description, lang } = Astro.props;
+const {
+  title,
+  description,
+  lang,
+  paths = { es: '/', en: '/en/' },
+  canonicalPath = Astro.url.pathname,
+} = Astro.props;
 const tr = t(lang);
 
 // `Astro.site` sale de `site` en astro.config.mjs (con www: es el host
 // canónico real). Todas las URLs absolutas de abajo se derivan de ahí.
 const site = Astro.site!;
-const canonical = new URL(Astro.url.pathname, site);
+const canonical = new URL(canonicalPath, site);
 const ogImage = new URL('/og-image.png', site);
 
-// El español vive en la raíz y el inglés en /en/. Con solo una página por
-// idioma basta con declarar las dos rutas; si el sitio crece, esto hay que
-// derivarlo de Astro.url.pathname.
-const alternates = [
-  { hreflang: 'es', href: new URL('/', site) },
-  { hreflang: 'en', href: new URL('/en/', site) },
-  { hreflang: 'x-default', href: new URL('/', site) },
-];
+// El español es el idioma por defecto, así que también es x-default.
+const alternates = paths
+  ? [
+      { hreflang: 'es', href: new URL(paths.es, site) },
+      { hreflang: 'en', href: new URL(paths.en, site) },
+      { hreflang: 'x-default', href: new URL(paths.es, site) },
+    ]
+  : [];
 
 // JSON-LD: ata la entidad "Rubén Salas" a sus perfiles de forma legible por
 // máquina. `alternateName` recoge la grafía sin tilde que usan el dominio,
@@ -101,6 +114,14 @@ const personSchema = {
         <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
       ))
     }
+
+    <!-- Los lectores de feeds encuentran el RSS a partir de esta etiqueta -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={`${tr.articles.title} — Rubén Salas`}
+      href={new URL('/rss.xml', site)}
+    />
 
     <!-- Open Graph: cómo se ve el sitio al compartirlo en redes -->
     <meta property="og:type" content="website" />

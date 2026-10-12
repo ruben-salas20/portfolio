@@ -16,6 +16,9 @@ export default defineConfig({
   // idiomas, así que si cambian hay que tocar los dos bloques.
   integrations: [
     sitemap({
+      // La versión en inglés de cada artículo no entra: es el mismo texto
+      // que la española y su canonical apunta a ella (ver Article.astro).
+      filter: (page) => !/\/en\/articles\/[^/]+\/$/.test(page),
       i18n: {
         defaultLocale: 'es',
         locales: { es: 'es', en: 'en' },
@@ -25,6 +28,16 @@ export default defineConfig({
 
   // El español pasó a vivir en la raíz, así que "/es/" (la ruta antigua,
   // que pudo quedar enlazada por ahí) redirige en vez de dar 404.
+  // Bloques de código de los artículos con un tema claro y otro oscuro.
+  // Sin `defaultColor: false`, Shiki fija los colores de uno solo y en el
+  // otro modo el código no se lee; global.css elige el del tema activo.
+  markdown: {
+    shikiConfig: {
+      themes: { light: 'github-light', dark: 'github-dark' },
+      defaultColor: false,
+    },
+  },
+
   redirects: {
     '/es/': '/',
   },

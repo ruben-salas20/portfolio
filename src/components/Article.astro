@@ -1,0 +1,49 @@
+---
+/**
+ * Article — la página de un artículo.
+ *
+ * Los artículos solo están en español. En /en/ la página lleva menús en
+ * inglés y un aviso, pero el texto es el mismo. Por eso esa versión apunta
+ * su canonical a la española y no declara hreflang: para un buscador son la
+ * misma página.
+ */
+import type { CollectionEntry } from 'astro:content';
+import { render } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from './SiteHeader.astro';
+import { t, type Lang } from '../i18n/ui';
+import { articleHref, articlesPath, formatDate } from '../data/articles';
+
+interface Props {
+  lang: Lang;
+  article: CollectionEntry<'articles'>;
+}
+const { lang, article } = Astro.props;
+const tr = t(lang);
+const { Content } = await render(article);
+const paths = { es: articleHref('es', article.id), en: articleHref('en', article.id) };
+---
+
+<Layout
+  title={`${article.data.title} — Rubén Salas`}
+  description={article.data.description}
+  lang={lang}
+  paths={lang === 'es' ? paths : null}
+  canonicalPath={paths.es}
+>
+  <SiteHeader lang={lang} otherLangHref={paths[lang === 'es' ? 'en' : 'es']} />
+
+  <main>
+    <p class="muted"><a href={articlesPath[lang]}>← {tr.articles.back}</a></p>
+    {lang !== 'es' && <p class="notice">{tr.articles.onlySpanish}</p>}
+    <article lang="es">
+      <h1 class="page-title">{article.data.title}</h1>
+      <time class="muted" datetime={article.data.date.toISOString().slice(0, 10)}>
+        {formatDate(article.data.date, lang)}
+      </time>
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+  </main>
+</Layout>
