@@ -21,6 +21,7 @@ export const ui = {
     },
     header: {
       available: 'Available for work',
+      articles: 'Articles',
       email: 'Email',
       otherLang: 'ES',
       themeToggle: 'Switch between light and dark mode',
@@ -48,11 +49,6 @@ export const ui = {
           lead: 'Local models:',
           text: ' I run and benchmark them on my homelab, which has an RTX 3050 with 6 GB.',
         },
-        {
-          lead: 'Log:',
-          text: ' I keep an (almost) daily record of what I do and learn.',
-          href: 'https://github.com/ruben-salas20/bitacora',
-        },
       ],
     },
     work: {
@@ -66,6 +62,15 @@ export const ui = {
       title: 'Technologies',
       use: 'I use',
       learning: 'Learning',
+    },
+    articles: {
+      title: 'Articles',
+      description: 'Articles by Rubén Salas, in Spanish.',
+      empty: 'No articles yet.',
+      back: 'All articles',
+      onlySpanish: 'This article is only available in Spanish.',
+      // Reproductor de audio de los artículos (ver src/scripts/media.ts).
+      player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
     },
     // Bocadillos de la escena de los márgenes: frases de una o dos palabras.
     scene: {
@@ -88,6 +93,7 @@ export const ui = {
     },
     header: {
       available: 'Disponible para trabajar',
+      articles: 'Artículos',
       email: 'Correo',
       otherLang: 'EN',
       themeToggle: 'Cambiar entre modo claro y oscuro',
@@ -114,11 +120,6 @@ export const ui = {
           lead: 'Modelos locales:',
           text: ' los ejecuto y los mido en mi homelab, que tiene una RTX 3050 de 6 GB.',
         },
-        {
-          lead: 'Bitácora:',
-          text: ' llevo un registro (casi) diario de lo que hago y aprendo.',
-          href: 'https://github.com/ruben-salas20/bitacora',
-        },
       ],
     },
     work: {
@@ -132,6 +133,14 @@ export const ui = {
       title: 'Tecnologías',
       use: 'Uso',
       learning: 'Aprendiendo',
+    },
+    articles: {
+      title: 'Artículos',
+      description: 'Artículos de Rubén Salas.',
+      empty: 'Aún no hay artículos.',
+      back: 'Todos los artículos',
+      onlySpanish: 'Este artículo solo está en español.',
+      player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
     },
     scene: {
       name: 'Rubén',

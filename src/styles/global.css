@@ -67,10 +67,15 @@ a:focus-visible {
   margin-bottom: 48px;
 }
 
-.site-header h1 {
+/* En la portada es el <h1>; en las demás páginas, un enlace a la portada. */
+.site-name {
   margin: 0;
   font-size: 1rem;
   font-weight: 600;
+}
+
+.site-name a {
+  text-decoration: none;
 }
 
 .available {
@@ -95,7 +100,8 @@ a:focus-visible {
 
 .site-header nav {
   display: flex;
-  gap: 16px;
+  flex-wrap: wrap;
+  gap: 8px 16px;
 }
 
 .site-header nav a {
@@ -140,6 +146,26 @@ a:focus-visible {
 .theme-toggle:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* En móvil los enlaces bajan a su propia fila y el botón sube a la esquina,
+   a la altura del nombre. Si siguiera al final de los enlaces, en pantallas
+   estrechas o con letra más ancha caería solo a una tercera fila. */
+@media (max-width: 600px) {
+  .site-header {
+    position: relative;
+  }
+
+  .site-header nav {
+    flex-basis: 100%;
+    column-gap: 12px;
+  }
+
+  .theme-toggle {
+    position: absolute;
+    top: 4px;
+    right: 0;
+  }
 }
 
 /* Los dos iconos viven siempre en el DOM y se cruzan: el que sale se
@@ -403,4 +429,227 @@ a:focus-visible {
 
 .skills dd {
   margin: 0;
+}
+
+/* ---- Artículos: lista y página de cada uno ---- */
+.page-title {
+  margin: 0 0 8px;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* Aviso de la versión en inglés: el artículo solo está en español. */
+.notice {
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.article-list {
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.article-list li + li {
+  margin-top: 24px;
+}
+
+.article-list a {
+  font-weight: 600;
+}
+
+.article-list time {
+  display: block;
+  color: var(--muted);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.article-list p {
+  margin: 4px 0 0;
+}
+
+.prose {
+  margin-top: 32px;
+}
+
+.prose h2 {
+  margin: 2em 0 0.5em;
+  font-size: 1.125rem;
+}
+
+.prose h3 {
+  margin: 1.5em 0 0.5em;
+  font-size: 1rem;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+}
+
+.prose blockquote {
+  margin: 1em 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--rule);
+  color: var(--muted);
+}
+
+.prose code {
+  font-size: 0.875em;
+}
+
+.prose :not(pre) > code {
+  padding: 1px 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--fg) 8%, transparent);
+}
+
+/* Bloques de código. Shiki los colorea con dos temas a la vez y deja cada
+   color en una variable (ver `markdown` en astro.config.mjs); aquí se elige
+   el del tema activo, como el resto de colores. */
+.prose pre {
+  padding: 12px 16px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.astro-code,
+.astro-code span {
+  color: light-dark(var(--shiki-light), var(--shiki-dark));
+  background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
+}
+
+/* ---- Reproductores de los artículos (ver src/scripts/media.ts) ---- */
+.audio-player {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1em 0;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.audio-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--muted);
+  border-radius: 50%;
+  background: none;
+  color: var(--fg);
+  cursor: pointer;
+}
+
+.audio-toggle:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.audio-player .icon-pause,
+.audio-player.playing .icon-play {
+  display: none;
+}
+
+.audio-player.playing .icon-pause {
+  display: block;
+}
+
+.audio-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.audio-title {
+  font-size: 0.875rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.audio-seek {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--fg);
+}
+
+.audio-time {
+  flex: none;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Portada de YouTube: la miniatura llega en 4:3 con bandas negras; con
+   16:9 y `object-fit: cover` las bandas quedan fuera. */
+.youtube {
+  display: block;
+  margin: 1em 0;
+  text-decoration: none;
+}
+
+.youtube-frame {
+  position: relative;
+  display: block;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--rule);
+}
+
+.youtube-frame img,
+.youtube-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  object-fit: cover;
+}
+
+/* El botón va sobre una foto, no sobre --bg: lleva los mismos colores en
+   los dos temas para leerse sobre cualquier miniatura. */
+.youtube-play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: light-dark(rgb(17 17 17 / 0.8), rgb(17 17 17 / 0.8));
+  color: light-dark(#ffffff, #ffffff);
+  transition: scale 150ms ease-out;
+}
+
+.youtube:hover .youtube-play {
+  scale: 1.08;
+}
+
+.youtube-title {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+a.youtube:hover .youtube-title {
+  color: var(--fg);
+  text-decoration: underline;
 }
