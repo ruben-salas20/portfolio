@@ -48,11 +48,6 @@ export const ui = {
           lead: 'Local models:',
           text: ' I run and benchmark them on my homelab, which has an RTX 3050 with 6 GB.',
         },
-        {
-          lead: 'Log:',
-          text: ' I keep an (almost) daily record of what I do and learn.',
-          href: 'https://github.com/ruben-salas20/bitacora',
-        },
       ],
     },
     work: {
@@ -113,11 +108,6 @@ export const ui = {
         {
           lead: 'Modelos locales:',
           text: ' los ejecuto y los mido en mi homelab, que tiene una RTX 3050 de 6 GB.',
-        },
-        {
-          lead: 'Bitácora:',
-          text: ' llevo un registro (casi) diario de lo que hago y aprendo.',
-          href: 'https://github.com/ruben-salas20/bitacora',
         },
       ],
     },
