@@ -20,7 +20,7 @@ const tr = t(lang);
 const homeHref = lang === 'es' ? '/' : '/en/';
 // Sin artículos publicados, el enlace llevaría a una lista vacía. En
 // `npm run dev` los borradores cuentan, así que ahí sale siempre.
-const hasArticles = (await getArticles()).length > 0;
+const hasArticles = (await getArticles(lang)).length > 0;
 ---
 
 <header class="site-header">

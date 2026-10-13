@@ -463,11 +463,29 @@ a:focus-visible {
   font-weight: 600;
 }
 
+/* Título y, si el artículo está en el otro idioma, su etiqueta. */
+.article-list .article-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0;
+}
+
 .article-list time {
   display: block;
   color: var(--muted);
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
+}
+
+/* Fecha y, en una traducción hecha con IA, su etiqueta. */
+.article-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  margin: 0;
 }
 
 .article-list p {

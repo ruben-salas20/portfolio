@@ -16,7 +16,7 @@ import type { APIRoute } from 'astro';
 import { t, contactInfo } from '../i18n/ui';
 import { projects } from '../data/projects';
 import { skills } from '../data/skills';
-import { getArticles, articleHref, articlesPath } from '../data/articles';
+import { getArticles, articleHref, articlesPath, feedPath } from '../data/articles';
 
 export const GET: APIRoute = async ({ site }) => {
   const tr = t('en');
@@ -53,18 +53,18 @@ export const GET: APIRoute = async ({ site }) => {
       : `- ${item.lead}${item.text}`,
   );
 
-  // Solo los 3 más recientes: el resto está en la lista y en el RSS.
-  const articles = await getArticles();
-  const articleLines = articles
-    .slice(0, 3)
-    .map(
-      (article) =>
-        `- [${article.data.title}](${base}${articleHref('es', article.id)}) (${article.data.date.toISOString().slice(0, 10)}): ${article.data.description}`,
-    );
+  // Solo los 3 más recientes: el resto está en la lista y en el RSS. Cada
+  // uno enlaza a su versión original: la de respaldo solo repite el texto.
+  const articles = await getArticles('en');
+  const articleLines = articles.slice(0, 3).map((article) => {
+    const { title, description, date } = article.entry.data;
+    const spanish = article.lang === 'es' ? ' (in Spanish)' : '';
+    return `- [${title}](${base}${articleHref(article.lang, article.slug)})${spanish} (${date.toISOString().slice(0, 10)}): ${description}`;
+  });
   const articlesSection = articles.length
     ? `## Articles
 
-Written in Spanish. Latest ${articleLines.length} of ${articles.length}; the [full list](${base}${articlesPath.es}) and the [RSS feed](${base}/rss.xml) have all of them.
+Latest ${articleLines.length} of ${articles.length}. Some are only in Spanish. The [full list](${base}${articlesPath.en}) and the RSS feeds ([English](${base}${feedPath.en}), [Spanish](${base}${feedPath.es})) have all of them.
 
 ${articleLines.join('\n')}
 

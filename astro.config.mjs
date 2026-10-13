@@ -1,9 +1,21 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
+import { existsSync, readFileSync } from 'node:fs';
 import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { youtube } from './src/plugins/youtube.mjs';
+
+// La integración del sitemap solo recibe URLs, no los artículos: para
+// saber si una página de artículo es de respaldo, mira si existe el archivo
+// de su idioma y si su frontmatter lo marca como borrador. Repite a mano la
+// regla de src/data/articles.ts; si cambia el formato, cambia los dos.
+function hasPublishedVersion(slug, lang) {
+  const file = new URL(`./src/content/articles/${slug}/${lang}.md`, import.meta.url);
+  if (!existsSync(file)) return false;
+  const frontmatter = readFileSync(file, 'utf8').split(/^---$/m)[1] ?? '';
+  return !/^draft:\s*true\s*$/m.test(frontmatter);
+}
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,9 +30,13 @@ export default defineConfig({
   // idiomas, así que si cambian hay que tocar los dos bloques.
   integrations: [
     sitemap({
-      // La versión en inglés de cada artículo no entra: es el mismo texto
-      // que la española y su canonical apunta a ella (ver Article.astro).
-      filter: (page) => !/\/en\/articles\/[^/]+\/$/.test(page),
+      // Las versiones de respaldo de los artículos no entran: repiten el
+      // texto del otro idioma y su canonical apunta a él (ver Article.astro).
+      filter: (page) => {
+        const match = new URL(page).pathname.match(/^\/(articulos|en\/articles)\/([^/]+)\/$/);
+        if (!match) return true;
+        return hasPublishedVersion(match[2], match[1] === 'articulos' ? 'es' : 'en');
+      },
       i18n: {
         defaultLocale: 'es',
         locales: { es: 'es', en: 'en' },

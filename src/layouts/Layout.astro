@@ -6,6 +6,7 @@
  */
 import '../styles/global.css';
 import { t, contactInfo, type Lang } from '../i18n/ui';
+import { feedPath } from '../data/articles';
 
 interface Props {
   title: string;
@@ -120,7 +121,7 @@ const personSchema = {
       rel="alternate"
       type="application/rss+xml"
       title={`${tr.articles.title} — Rubén Salas`}
-      href={new URL('/rss.xml', site)}
+      href={new URL(feedPath[lang], site)}
     />
 
     <!-- Open Graph: cómo se ve el sitio al compartirlo en redes -->

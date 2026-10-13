@@ -15,14 +15,14 @@ El sitio es una hoja de vida: dice lo que Rubén sabe y hace, nada más. Aplica 
 - **Tecnologías** (`src/data/skills.ts`): en `use`, solo lo que Rubén usa por su cuenta, sin IA. Que una tecnología salga en un repo suyo no basta. En `learning`, lo que estudia ahora, no lo que planea.
 - **Proyectos** (`src/data/projects.ts`): un proyecto entra si sigue vivo y si lo que dice su descripción existe en el código. `writtenByMe: true` muestra la etiqueta «escrito por mí»; `false`, «dirigido con IA». Si dudas de cuál lleva, pregunta a Rubén.
 - **Texto de Rubén** (por ejemplo, `about.howIWork` en `ui.ts`): corrige solo ortografía y puntuación. Conserva sus redundancias y su forma de hablar: pulir el estilo lo hace sonar a IA.
-- **Artículos** (`src/content/articles/`): son texto de Rubén, con la misma regla que el punto anterior.
+- **Artículos** (`src/content/articles/`): son texto de Rubén, con la misma regla que el punto anterior. Una traducción hecha con IA lleva `translatedWithAI: true`, que muestra «Traducido con IA» bajo el título.
 
 ## Dónde va cada cosa
 
 - **Secciones**: se añaden y se reordenan solo en `src/components/Portfolio.astro`. Las páginas de `src/pages/` solo le pasan `lang`.
 - **Textos de la interfaz**: solo en `src/i18n/ui.ts`, con la misma clave en `es` y en `en`.
 - **Listas** (proyectos, tecnologías): en `src/data/`, traducidas por campo (`desc: { en, es }`). `repo: null` marca un repositorio privado.
-- **Artículos**: una carpeta por artículo en `src/content/articles/`, con el texto en `index.md` y sus imágenes al lado; el nombre de la carpeta es la URL. Se escriben solo en español y se publican en `/articulos/` y en `/en/articles/`. La versión `/en/` lleva la interfaz en inglés y un aviso del idioma, y su canonical apunta a la española. Con `draft: true` el artículo solo sale en `npm run dev`.
+- **Artículos**: una carpeta por artículo en `src/content/articles/`, con `es.md`, `en.md` o los dos, y las imágenes al lado. El nombre de la carpeta es la URL en los dos idiomas. Cada artículo se publica en `/articulos/` y en `/en/articles/`; si falta un idioma, esa ruta es una **versión de respaldo**: muestra el otro texto con un aviso, apunta su canonical al original y no entra en el sitemap. Con `draft: true` esa versión solo sale en `npm run dev`. Cada idioma tiene su RSS: `/rss.xml` y `/en/rss.xml`.
 - **Multimedia de los artículos**: imágenes y GIF, en la carpeta del artículo. Los audios, en `public/articulos/<carpeta>/`, porque Astro no procesa las rutas que van dentro de HTML. Los vídeos, en YouTube: un enlace solo en su párrafo se convierte en portada (`src/plugins/youtube.mjs`). Ese plugin es de Sätteri, el procesador de Markdown de Astro 7; los de remark o rehype no funcionan sin instalar el antiguo.
 - **Plantilla** (`src/content/articles/plantilla/`): catálogo de todo lo que admite un artículo, con cómo se escribe y cómo queda. Es la referencia de Rubén: déjala siempre con `draft: true`, y si un artículo admite algo nuevo, añádelo ahí.
 - **`/llms.txt`**: se genera solo a partir de `ui.ts`, `src/data/` y los artículos. Si añades una clave o un campo, decide si debe salir ahí.
@@ -56,7 +56,7 @@ El español es el idioma por defecto y no lleva prefijo. Para cambiarlo, edita e
 4. `defaultLang` en `ui.ts`.
 5. `otherLangHref` en `Portfolio.astro` y `homeHref` en `SiteHeader.astro`.
 6. El valor por defecto de `paths` en `Layout.astro`.
-7. `articlesPath` en `src/data/articles.ts`, y las carpetas `articulos/` y `en/articles/` de `src/pages/`.
+7. `articlesPath` y `feedPath` en `src/data/articles.ts`, las carpetas `articulos/` y `en/articles/` y el `en/rss.xml.ts` de `src/pages/`, y el filtro de `sitemap()` en `astro.config.mjs`.
 
 ## Dominio e iconos
 

@@ -1,10 +1,10 @@
 /**
  * Colecciones de contenido. Cada artículo es una carpeta en
- * src/content/articles/ con su texto en index.md y sus imágenes al lado,
- * para que las imágenes de todos los artículos no acaben en una sola
- * carpeta. El nombre de la carpeta es el slug.
+ * src/content/articles/ con un archivo por idioma (es.md, en.md o los dos)
+ * y sus imágenes al lado, que comparten las dos versiones. El nombre de la
+ * carpeta es el slug en las dos rutas.
  * Si al frontmatter le falta un campo, el build falla y dice cuál.
- * Con `draft: true` el artículo solo existe en `npm run dev`.
+ * Con `draft: true` esa versión solo existe en `npm run dev`.
  */
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
@@ -12,17 +12,20 @@ import { z } from 'astro/zod';
 
 const articles = defineCollection({
   loader: glob({
-    pattern: '*/index.md',
+    pattern: '*/{es,en}.md',
     base: './src/content/articles',
-    // Sin esto el id sale del frontmatter o de la ruta del archivo, y
-    // aquí todos los archivos se llaman index.md.
-    generateId: ({ entry }) => entry.split('/')[0],
+    // "mi-articulo/es.md" → "mi-articulo/es". Sin esto el id podría salir
+    // del frontmatter; src/data/articles.ts lo parte en carpeta e idioma.
+    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
   }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     date: z.coerce.date(),
     draft: z.boolean().default(false),
+    // El sitio separa lo que escribe Rubén de lo que hace con IA: una
+    // traducción hecha con IA lo dice bajo el título.
+    translatedWithAI: z.boolean().default(false),
   }),
 });
 
