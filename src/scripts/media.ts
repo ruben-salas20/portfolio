@@ -4,7 +4,7 @@
  * - Audio: cambia el reproductor del navegador, que cada uno pinta a su
  *   manera, por uno con el estilo de la página. Sin JS se queda el del
  *   navegador, porque el <audio> lleva `controls`.
- * - YouTube: la portada que genera src/plugins/rehype-youtube.mjs se
+ * - YouTube: la portada que genera src/plugins/youtube.mjs se
  *   cambia por el reproductor de YouTube al pulsarla. Sin JS es un enlace.
  */
 
