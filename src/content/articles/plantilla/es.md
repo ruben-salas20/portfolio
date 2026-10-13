@@ -10,7 +10,7 @@ Este artículo no se publica nunca. Sirve para recordar cómo se escribe cada co
 
 ## Un artículo nuevo
 
-Crea una carpeta en `src/content/articles/` con el nombre que quieras en la URL, y dentro un `index.md` que empiece así:
+Crea una carpeta en `src/content/articles/` con el nombre que quieras en la URL, y dentro un `es.md` que empiece así:
 
 ```markdown
 ---
@@ -22,6 +22,18 @@ draft: true
 ```
 
 Con `draft: true` solo se ve en `npm run dev`. Para publicarlo, quita esa línea.
+
+## Versión en inglés
+
+Pon al lado un `en.md` con el mismo formato y el texto en inglés. Las imágenes de la carpeta sirven para los dos. Si la traducción la hizo una IA, añade esta línea al frontmatter y saldrá «Traducido con IA» bajo el título:
+
+```markdown
+translatedWithAI: true
+```
+
+Cada archivo tiene su propio `draft`: puedes publicar el español y dejar la traducción en borrador.
+
+Si un artículo solo existe en un idioma, la página del otro muestra el texto que hay con un aviso. Esta plantilla solo tiene `es.md`: abre `/en/articles/plantilla/` para ver el aviso.
 
 ## Texto
 

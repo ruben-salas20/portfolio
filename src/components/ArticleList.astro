@@ -2,18 +2,22 @@
 /**
  * ArticleList — la página con todos los artículos, del más reciente al más
  * antiguo. Las páginas de cada idioma solo hacen <ArticleList lang="..." />.
+ *
+ * Un artículo que solo existe en el otro idioma sale igual, con su título
+ * original y una etiqueta del idioma: si no saliera, quien lee en este
+ * idioma no sabría que existe.
  */
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from './SiteHeader.astro';
 import { t, type Lang } from '../i18n/ui';
-import { getArticles, articleHref, articlesPath, formatDate } from '../data/articles';
+import { getArticles, articleHref, articlesPath, feedPath, formatDate } from '../data/articles';
 
 interface Props {
   lang: Lang;
 }
 const { lang } = Astro.props;
 const tr = t(lang);
-const articles = await getArticles();
+const articles = await getArticles(lang);
 const otherLang: Lang = lang === 'es' ? 'en' : 'es';
 ---
 
@@ -34,16 +38,21 @@ const otherLang: Lang = lang === 'es' ? 'en' : 'es';
         <ul class="article-list">
           {articles.map((article) => (
             <li>
-              <a href={articleHref(lang, article.id)} lang="es">{article.data.title}</a>
-              <time datetime={article.data.date.toISOString().slice(0, 10)}>
-                {formatDate(article.data.date, lang)}
+              <p class="article-head">
+                <a href={articleHref(lang, article.slug)} lang={article.lang}>
+                  {article.entry.data.title}
+                </a>
+                {article.lang !== lang && <span class="tag">{tr.articles.otherLangTag}</span>}
+              </p>
+              <time datetime={article.entry.data.date.toISOString().slice(0, 10)}>
+                {formatDate(article.entry.data.date, lang)}
               </time>
-              <p lang="es">{article.data.description}</p>
+              <p lang={article.lang}>{article.entry.data.description}</p>
             </li>
           ))}
         </ul>
       )
     }
-    <p class="muted"><a href="/rss.xml">RSS</a></p>
+    <p class="muted"><a href={feedPath[lang]}>RSS</a></p>
   </main>
 </Layout>

@@ -65,10 +65,13 @@ export const ui = {
     },
     articles: {
       title: 'Articles',
-      description: 'Articles by Rubén Salas, in Spanish.',
+      description: 'Articles by Rubén Salas.',
       empty: 'No articles yet.',
       back: 'All articles',
-      onlySpanish: 'This article is only available in Spanish.',
+      // Para un artículo que solo existe en el otro idioma.
+      onlyOtherLang: 'This article is only available in Spanish.',
+      otherLangTag: 'Spanish',
+      translatedWithAI: 'Translated with AI',
       // Reproductor de audio de los artículos (ver src/scripts/media.ts).
       player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
     },
@@ -139,7 +142,9 @@ export const ui = {
       description: 'Artículos de Rubén Salas.',
       empty: 'Aún no hay artículos.',
       back: 'Todos los artículos',
-      onlySpanish: 'Este artículo solo está en español.',
+      onlyOtherLang: 'Este artículo solo está en inglés.',
+      otherLangTag: 'En inglés',
+      translatedWithAI: 'Traducido con IA',
       player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
     },
     scene: {
