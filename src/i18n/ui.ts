@@ -31,7 +31,7 @@ export const ui = {
       intro:
         "Systems Engineering student at Universidad del Quindío (2nd semester), in Armenia, Colombia. I'm learning to build AI agents in Python.",
       howIWork:
-        "My first projects were built by directing Claude Code: I decided what and how to do things, but I didn't write the code. With harness I program the code myself, and the AI explains and reviews it (it's my boss, ha). That's how I build my skills, learn so I can later direct with judgement, and enjoy programming, which is what I like.",
+        "I work by defining the specifications and the process of each project, and I implement it by directing AI agents. I'm constantly developing my directing skills and my understanding of code, to sharpen my judgement and make better decisions. I also enjoy writing code by hand, even though it's becoming less and less efficient, so I do it more as a hobby and out of passion.",
     },
     now: {
       title: 'Now',
@@ -106,7 +106,7 @@ export const ui = {
       intro:
         'Estudiante de Ingeniería de Sistemas en la Universidad del Quindío (2.º semestre), en Armenia, Colombia. Estoy aprendiendo a construir agentes de IA con Python.',
       howIWork:
-        'Mis primeros proyectos los construí dirigiendo a Claude Code: yo decidía qué y cómo hacer las cosas, pero no escribía el código. Con harness yo programo el código, y la IA me explica y me revisa (es mi jefe, jaja). Así desarrollo mis habilidades, aprendo para luego poder dirigir con criterio y disfruto de programar, que es lo que me gusta.',
+        'Trabajo definiendo las especificaciones y el proceso de cada proyecto, y lo implemento dirigiendo agentes de IA. Desarrollo constantemente mis habilidades de dirección y mi entendimiento del código, para mejorar mi criterio y tomar mejores decisiones. También disfruto escribir código a mano, aunque hoy es cada vez menos eficiente, así que lo hago más por hobby y por pasión.',
     },
     now: {
       title: 'Ahora',
