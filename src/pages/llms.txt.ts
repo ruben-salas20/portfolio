@@ -14,7 +14,7 @@
  */
 import type { APIRoute } from 'astro';
 import { t, contactInfo } from '../i18n/ui';
-import { projects } from '../data/projects';
+import { forLang, projects, showAuthorship } from '../data/projects';
 import { skills } from '../data/skills';
 import { getArticles, articleHref, articlesPath, feedPath } from '../data/articles';
 
@@ -28,16 +28,16 @@ export const GET: APIRoute = async ({ site }) => {
 
   // Un proyecto puede tener repo público, sitio en vivo, ambos o ninguno.
   const projectLines = projects.map((project) => {
+    const repo = forLang(project.repo, 'en');
     const links: string[] = [
-      project.repo
-        ? `[Repository](${contactInfo.github}/${project.repo})`
-        : 'Repository: private',
+      repo ? `[Repository](${contactInfo.github}/${repo})` : 'Repository: private',
     ];
     if (project.live) links.push(`[Live site](${project.live})`);
     const authorship = project.writtenByMe ? tr.work.writtenByMe : tr.work.aiDirected;
+    const details = showAuthorship ? `${project.year}, ${authorship}` : project.year;
 
     return [
-      `### ${project.name} (${project.year}, ${authorship})`,
+      `### ${forLang(project.name, 'en')} (${details})`,
       '',
       project.desc.en,
       '',
@@ -90,9 +90,7 @@ ${nowLines.join('\n')}
 
 ## Projects
 
-Each project is labelled "${tr.work.writtenByMe}" or "${tr.work.aiDirected}".
-
-${projectLines.join('\n\n')}
+${showAuthorship ? `Each project is labelled "${tr.work.writtenByMe}" or "${tr.work.aiDirected}".\n\n` : ''}${projectLines.join('\n\n')}
 
 ## Technologies
 

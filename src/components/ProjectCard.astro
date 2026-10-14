@@ -1,13 +1,13 @@
 ---
 /**
- * ProjectCard — un proyecto: nombre, etiqueta de autoría, año, descripción y,
- * al pie, stack y enlaces.
+ * ProjectCard — un proyecto: nombre, etiqueta de autoría (si está activa), año,
+ * descripción y, al pie, stack y enlaces.
  *
  * El nombre enlaza al repo; el sitio en vivo va aparte en el pie. Por eso es
  * un <article> y no un <a> envolvente: puede haber dos destinos o ninguno, y
  * anidar enlaces dentro de un <a> no es HTML válido.
  */
-import type { Project } from '../data/projects';
+import { forLang, showAuthorship, type Project } from '../data/projects';
 import { t, type Lang } from '../i18n/ui';
 
 interface Props {
@@ -18,23 +18,27 @@ const { project, lang } = Astro.props;
 const tr = t(lang);
 
 // Sin `repo` el proyecto es privado: se describe, pero no se enlaza a un 404.
-const repoUrl = project.repo
-  ? `https://github.com/ruben-salas20/${project.repo}`
-  : null;
+const repo = forLang(project.repo, lang);
+const name = forLang(project.name, lang);
+const repoUrl = repo ? `https://github.com/ruben-salas20/${repo}` : null;
 ---
 
 <article class="project">
   <div class="project-head">
     {
       repoUrl ? (
-        <a href={repoUrl} class="project-name">{project.name}</a>
+        <a href={repoUrl} class="project-name">{name}</a>
       ) : (
-        <span class="project-name">{project.name}</span>
+        <span class="project-name">{name}</span>
       )
     }
-    <span class:list={['tag', { own: project.writtenByMe }]}>
-      {project.writtenByMe ? tr.work.writtenByMe : tr.work.aiDirected}
-    </span>
+    {
+      showAuthorship && (
+        <span class:list={['tag', { own: project.writtenByMe }]}>
+          {project.writtenByMe ? tr.work.writtenByMe : tr.work.aiDirected}
+        </span>
+      )
+    }
     <span class="year">{project.year}</span>
   </div>
   <p>{project.desc[lang]}</p>
