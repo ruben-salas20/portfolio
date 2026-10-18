@@ -75,6 +75,12 @@ export const ui = {
       // Reproductor de audio de los artículos (ver src/scripts/media.ts).
       player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
     },
+    // Versión de terminal (ver src/data/terminal.ts). `otherLang` va en el
+    // otro idioma: lo lee quien no entiende este.
+    terminal: {
+      allArticles: 'All articles',
+      otherLang: 'En español: curl https://rubensalas.dev',
+    },
     // Bocadillos de la escena de los márgenes: frases de una o dos palabras.
     scene: {
       name: 'Rubén',
@@ -146,6 +152,10 @@ export const ui = {
       otherLangTag: 'En inglés',
       translatedWithAI: 'Traducido con IA',
       player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
+    },
+    terminal: {
+      allArticles: 'Todos los artículos',
+      otherLang: 'In English: curl https://rubensalas.dev/en',
     },
     scene: {
       name: 'Rubén',
