@@ -19,11 +19,13 @@ function hasPublishedVersion(slug, lang) {
 
 // https://astro.build/config
 export default defineConfig({
-  // Dominio de producción. OJO: va CON "www" — el apex redirige a www, así
-  // que ese es el host canónico real. Todo lo que Astro construye a partir
-  // de aquí (canonical, hreflang, sitemap, og:url, /llms.txt) hereda este
-  // valor, de modo que un host equivocado se propaga a todo el sitio.
-  site: 'https://www.rubensalas.dev',
+  // Dominio de producción. OJO: va SIN "www" — en Vercel, www redirige al
+  // apex, y el apex tiene que servir directo para que `curl` reciba la
+  // versión de terminal sin seguir redirecciones (ver vercel.json). Todo lo
+  // que Astro construye a partir de aquí (canonical, hreflang, sitemap,
+  // og:url, /llms.txt) hereda este valor, de modo que un host equivocado se
+  // propaga a todo el sitio.
+  site: 'https://rubensalas.dev',
 
   // Genera /sitemap-index.xml declarando las dos locales y sus alternates.
   // La integración no lee el bloque `i18n` de abajo: repite aquí los

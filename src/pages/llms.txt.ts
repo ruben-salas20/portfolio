@@ -20,7 +20,7 @@ import { getArticles, articleHref, articlesPath, feedPath } from '../data/articl
 
 export const GET: APIRoute = async ({ site }) => {
   const tr = t('en');
-  const base = (site ?? new URL('https://www.rubensalas.dev')).origin;
+  const base = (site ?? new URL('https://rubensalas.dev')).origin;
 
   // Fecha de compilación. Sin esto, afirmaciones con caducidad como
   // "2nd semester" se leen como vigentes para siempre.

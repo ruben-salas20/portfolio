@@ -1,0 +1,19 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    { "source": "/", "headers": [{ "key": "Vary", "value": "User-Agent" }] },
+    { "source": "/en{/}?", "headers": [{ "key": "Vary", "value": "User-Agent" }] }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?:curl|Wget|HTTPie|xh)/.*" }],
+      "destination": "/index.txt"
+    },
+    {
+      "source": "/en{/}?",
+      "has": [{ "type": "header", "key": "user-agent", "value": "(?:curl|Wget|HTTPie|xh)/.*" }],
+      "destination": "/en/index.txt"
+    }
+  ]
+}

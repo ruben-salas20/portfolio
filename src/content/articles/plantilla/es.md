@@ -38,12 +38,12 @@ Si un artículo solo existe en un idioma, la página del otro muestra el texto q
 ## Texto
 
 ```markdown
-Un párrafo con **negrita**, *cursiva*, `código` y un [enlace](https://www.rubensalas.dev).
+Un párrafo con **negrita**, *cursiva*, `código` y un [enlace](https://rubensalas.dev).
 
 Una línea en blanco empieza otro párrafo.
 ```
 
-Un párrafo con **negrita**, *cursiva*, `código` y un [enlace](https://www.rubensalas.dev).
+Un párrafo con **negrita**, *cursiva*, `código` y un [enlace](https://rubensalas.dev).
 
 Una línea en blanco empieza otro párrafo.
 
