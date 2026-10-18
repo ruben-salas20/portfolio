@@ -2,6 +2,8 @@
  * La portada en texto para la terminal: lo que recibe `curl rubensalas.dev`.
  * vercel.json reescribe "/" y "/en/" a /index.txt y /en/index.txt cuando la
  * petición viene de curl, Wget, HTTPie o xh; un navegador sigue viendo el HTML.
+ * Va con `routes` y no con `rewrites`: Vercel aplica los rewrites solo si no
+ * hay un archivo en esa ruta, y en "/" siempre está index.html.
  *
  * Sale de las mismas fuentes que la página, igual que /llms.txt, para que no
  * se desincronice. Los colores son códigos ANSI: la terminal los pinta y un
