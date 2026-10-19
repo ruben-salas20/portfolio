@@ -6,7 +6,7 @@
 
 <p align="center">
   My online résumé, in Spanish and English.<br>
-  <a href="https://rubensalas.dev/en/">rubensalas.dev</a> · <code>curl rubensalas.dev/en/</code> · <a href="README.md">Español</a>
+  <a href="https://rubensalas.dev/en/">rubensalas.dev</a> · <code>curl https://rubensalas.dev/en</code> · <a href="README.md">Español</a>
 </p>
 
 <p align="center">

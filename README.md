@@ -6,7 +6,7 @@
 
 <p align="center">
   Mi hoja de vida en línea, en español y en inglés.<br>
-  <a href="https://rubensalas.dev">rubensalas.dev</a> · <code>curl rubensalas.dev</code> · <a href="README.en.md">English</a>
+  <a href="https://rubensalas.dev">rubensalas.dev</a> · <code>curl https://rubensalas.dev</code> · <a href="README.en.md">English</a>
 </p>
 
 <p align="center">
