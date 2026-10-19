@@ -1,5 +1,5 @@
 /**
- * La portada en texto para la terminal: lo que recibe `curl rubensalas.dev`.
+ * La portada en texto para la terminal: lo que recibe `curl https://rubensalas.dev`.
  * vercel.json reescribe "/" y "/en/" a /index.txt y /en/index.txt cuando la
  * petición viene de curl, Wget, HTTPie o xh; un navegador sigue viendo el HTML.
  * Va con `routes` y no con `rewrites`: Vercel aplica los rewrites solo si no
@@ -24,6 +24,10 @@ const bold = ansi('1');
 const dim = ansi('2');
 const link = ansi('34');
 const heading = ansi('1;35');
+
+// El monograma "rs" del favicon, dibujado con bloques: cada carácter pinta
+// dos píxeles en vertical (▀ arriba, ▄ abajo), así que salen 5 de alto.
+const LOGO = ['█▄▀▀ ▄▀▀▀', '█     ▀▀▄', '▀    ▀▀▀'];
 
 /** Parte el texto en líneas de WIDTH columnas, sin cortar palabras. */
 function wrap(text: string, width = WIDTH): string[] {
@@ -53,6 +57,7 @@ export async function terminalCard(lang: Lang, site: URL) {
   const out: string[] = [];
   const section = (title: string) => out.push('', heading(title.toUpperCase()), '');
 
+  out.push(...LOGO, '');
   out.push(bold('Rubén Salas'), dim(tr.header.available), '');
   out.push(...wrap(tr.about.intro));
   out.push('');
