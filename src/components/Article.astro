@@ -39,8 +39,8 @@ const isFallback = article.lang !== lang;
   <main>
     <p class="muted"><a href={articlesPath[lang]}>← {tr.articles.back}</a></p>
     {isFallback && <p class="notice">{tr.articles.onlyOtherLang}</p>}
-    <!-- Los data-* llevan los textos del reproductor de audio en el idioma
-         de la interfaz; el script no tiene acceso a ui.ts. -->
+    <!-- Los data-* llevan los textos del reproductor de audio y del botón de
+         copiar en el idioma de la interfaz; los scripts no leen ui.ts. -->
     <article
       lang={article.lang}
       data-lang={lang}
@@ -48,6 +48,8 @@ const isFallback = article.lang !== lang;
       data-pause={tr.articles.player.pause}
       data-seek={tr.articles.player.seek}
       data-of={tr.articles.player.of}
+      data-copy={tr.code.copy}
+      data-copied={tr.code.copied}
     >
       <h1 class="page-title">{entry.data.title}</h1>
       <p class="article-meta muted" lang={lang}>
@@ -65,4 +67,5 @@ const isFallback = article.lang !== lang;
 
 <script>
   import '../scripts/media';
+  import '../scripts/copy';
 </script>

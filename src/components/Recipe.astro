@@ -26,7 +26,8 @@ const readme = lang === 'es' ? 'README.es.md' : 'README.md';
 
   <main>
     <p class="muted"><a href={recipesPath[lang]}>← {tr.recipes.back}</a></p>
-    <article>
+    <!-- Textos del botón de copiar: el script no lee ui.ts. -->
+    <article data-copy={tr.code.copy} data-copied={tr.code.copied}>
       <h1 class="page-title">{title}</h1>
       <p class="article-meta muted">
         <span class="tag">{tr.recipes.kindTag[recipe.data.kind]}</span>
@@ -38,3 +39,7 @@ const readme = lang === 'es' ? 'README.es.md' : 'README.md';
     </article>
   </main>
 </Layout>
+
+<script>
+  import '../scripts/copy';
+</script>

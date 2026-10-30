@@ -611,6 +611,51 @@ a:focus-visible {
   background-color: light-dark(var(--shiki-light-bg), var(--shiki-dark-bg));
 }
 
+/* Botón de copiar (ver src/scripts/copy.ts). Siempre visible: en móvil no
+   hay cursor que lo destape. */
+.code-block {
+  position: relative;
+}
+
+.code-block pre {
+  padding-right: 48px;
+}
+
+.copy-code {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: inline-flex;
+  padding: 6px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.copy-code:hover {
+  color: var(--fg);
+}
+
+.copy-code:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+.copy-code .icon-done,
+.copy-code.done .icon-copy {
+  display: none;
+}
+
+.copy-code.done .icon-done {
+  display: block;
+}
+
+.copy-code.done {
+  color: var(--available);
+}
+
 /* ---- Reproductores de los artículos (ver src/scripts/media.ts) ---- */
 .audio-player {
   display: flex;

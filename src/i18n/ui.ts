@@ -77,6 +77,8 @@ export const ui = {
       // Reproductor de audio de los artículos (ver src/scripts/media.ts).
       player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
     },
+    // Botón de los bloques de código (ver src/scripts/copy.ts).
+    code: { copy: 'Copy', copied: 'Copied' },
     recipes: {
       title: 'Recipes',
       description: 'Measured recipes for running open models on modest local hardware.',
@@ -169,6 +171,7 @@ export const ui = {
       translatedWithAI: 'Traducido con IA',
       player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
     },
+    code: { copy: 'Copiar', copied: 'Copiado' },
     recipes: {
       title: 'Recetas',
       description: 'Recetas medidas para ejecutar modelos abiertos en hardware local modesto.',
