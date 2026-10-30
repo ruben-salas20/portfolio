@@ -9,6 +9,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { recipesLoader } from './loaders/recipes';
 
 const articles = defineCollection({
   loader: glob({
@@ -29,15 +30,10 @@ const articles = defineCollection({
   }),
 });
 
-// Recetas del repo ruben-salas20/recipes: una carpeta por modelo con es.md
-// y en.md. MAQUETA: por ahora son copias convertidas a mano; el plan es
-// descargarlas del repo al construir el sitio.
+// Recetas del repo ruben-salas20/recipes, descargadas al construir el sitio
+// (ver src/loaders/recipes.ts). El id es "<modelo>/<idioma>".
 const recipes = defineCollection({
-  loader: glob({
-    pattern: '*/{es,en}.md',
-    base: './src/content/recipes',
-    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
-  }),
+  loader: recipesLoader(),
   schema: z.object({
     title: z.string(),
     // Nombre de la carpeta en el repo; también es el slug.
