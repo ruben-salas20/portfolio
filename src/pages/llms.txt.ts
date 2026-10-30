@@ -102,6 +102,7 @@ ${articlesSection}## Contact
 - [Email](mailto:${contactInfo.email}): ${contactInfo.email}
 - [GitHub](${contactInfo.github})
 - [LinkedIn](${contactInfo.linkedin})
+- [X](${contactInfo.x})
 `;
 
   return new Response(body, {

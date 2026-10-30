@@ -61,7 +61,7 @@ export async function terminalCard(lang: Lang, site: URL) {
   out.push(bold('Rubén Salas'), dim(tr.header.available), '');
   out.push(...wrap(tr.about.intro));
   out.push('');
-  out.push(link(contactInfo.github), link(contactInfo.linkedin), link(contactInfo.email));
+  out.push(link(contactInfo.github), link(contactInfo.linkedin), link(contactInfo.x), link(contactInfo.email));
 
   section(tr.about.title);
   out.push(...wrap(tr.about.howIWork));

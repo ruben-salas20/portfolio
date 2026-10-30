@@ -101,6 +101,7 @@ a:focus-visible {
 .site-header nav {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 8px 16px;
 }
 
@@ -112,6 +113,13 @@ a:focus-visible {
 .site-header nav a:hover {
   color: var(--fg);
   text-decoration: underline;
+}
+
+/* Correo, GitHub, LinkedIn y X: iconos en vez de texto, para que la
+   cabecera quepa en una línea. Son hermanos de los enlaces de texto, así
+   que comparten su separación. */
+.icon-link {
+  display: inline-flex;
 }
 
 /* Botón de tema: muestra la luna en claro (pasa a oscuro) y el sol en

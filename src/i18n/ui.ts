@@ -210,4 +210,5 @@ export const contactInfo = {
   email: 'rubensalas0907@gmail.com',
   github: 'https://github.com/ruben-salas20',
   linkedin: 'https://www.linkedin.com/in/ruben-salas17/',
+  x: 'https://x.com/rubensalas_dev',
 };
