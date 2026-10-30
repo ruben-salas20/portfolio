@@ -154,3 +154,27 @@ El archivo va en `public/articulos/<carpeta-del-artículo>/`, no en la carpeta d
 ```
 
 <audio src="/articulos/plantilla/audio.mp3" title="Tono de prueba de 440 Hz" controls></audio>
+
+## Artefacto HTML
+
+Un artefacto es una página HTML suelta que funciona dentro del artículo: una calculadora, una gráfica que se mueve, una demo. Va en `public/articulos/<carpeta-del-artículo>/`, como el audio.
+
+Pega el enlace solo en una línea. El texto entre corchetes es el título que sale debajo:
+
+```markdown
+[¿Cuánto ocupa un modelo?](/articulos/plantilla/artefacto.html)
+```
+
+[¿Cuánto ocupa un modelo?](/articulos/plantilla/artefacto.html)
+
+Sale una portada y el artefacto se carga al pulsarla. Ya cargado, ocupa el alto que necesita.
+
+Para que se vea como el sitio, el artefacto enlaza la hoja de estilos compartida dentro de su `<head>`:
+
+```html
+<link rel="stylesheet" href="/articulos/artefactos.css">
+```
+
+Con ella tiene la letra y los colores del sitio, sigue el tema claro u oscuro y sus controles salen con el mismo estilo: desplegables, deslizadores, botones y opciones en botones. Las clases (`field`, `options`, `muted`, `big`) están explicadas en `public/articulos/artefactos.css`, y el artefacto de esta plantilla las usa todas.
+
+Dentro de una frase, el enlace no se convierte: [este artefacto](/articulos/plantilla/artefacto.html) sigue siendo un enlace.

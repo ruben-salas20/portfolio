@@ -1,0 +1,164 @@
+/* ============================================================
+   Estilos compartidos de los artefactos HTML de los artículos.
+   Un artefacto es una página suelta dentro de un iframe y no hereda
+   global.css: enlaza esta hoja para tener la letra, los colores y los
+   controles del sitio.
+
+     <link rel="stylesheet" href="/articulos/artefactos.css">
+
+   Los colores son los de global.css; si cambian allí, cambian aquí.
+   El tema lo fija src/scripts/media.ts con `color-scheme` en el <html>
+   del artefacto, así que `light-dark()` sigue al botón de tema del sitio.
+   ============================================================ */
+:root {
+  --bg: light-dark(#ffffff, #111111);
+  --fg: light-dark(#1a1a1a, #e8e8e8);
+  --muted: light-dark(#6b6b6b, #9a9a9a);
+  --rule: light-dark(#e5e5e5, #2a2a2a);
+  color-scheme: light dark;
+}
+
+/* Transparente: dentro del artículo se ve el fondo de la página. */
+body {
+  margin: 0;
+  padding: 20px;
+  background: transparent;
+  color: var(--fg);
+  font: 15px/1.6 system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Campos: etiqueta pequeña y apagada encima del control ---- */
+.field {
+  display: block;
+  margin: 0 0 16px;
+  padding: 0;
+  border: 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.field > legend {
+  padding: 0;
+  margin-bottom: 4px;
+}
+
+.field > select,
+.field > input[type="range"] {
+  display: block;
+  margin-top: 4px;
+}
+
+:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* ---- Deslizador ---- */
+input[type="range"] {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--fg);
+}
+
+/* ---- Botón ---- */
+button {
+  padding: 4px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--bg);
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+button:hover {
+  border-color: var(--muted);
+}
+
+/* ---- Desplegable ----
+   Solo se estiliza el botón; la lista abierta es la del navegador, que ya
+   sigue el tema. No usar `appearance: base-select` para estilizarla: esa
+   lista se dibuja dentro del iframe, que mide justo lo que el contenido, y
+   sale cortada. La nativa se dibuja por encima de la página.
+   La flecha son dos degradados para que tome el color del tema (una imagen
+   SVG no puede usar las variables). */
+select {
+  appearance: none;
+  width: fit-content;
+  min-width: 12rem;
+  max-width: 100%;
+  padding: 4px 32px 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+    linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+  background-position:
+    calc(100% - 15px) 50%,
+    calc(100% - 10px) 50%;
+  background-size: 5px 5px;
+  background-repeat: no-repeat;
+  color: var(--fg);
+  font: inherit;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+select:hover {
+  border-color: var(--muted);
+}
+
+/* ---- Opciones en botones: radios que se ven como botones ----
+   <div class="options">
+     <label><input type="radio" name="x" value="1" checked><span>Uno</span></label>
+   </div> */
+.options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.options label {
+  color: var(--fg);
+}
+
+.options input {
+  position: absolute;
+  opacity: 0;
+}
+
+.options span {
+  display: block;
+  padding: 4px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.options span:hover {
+  border-color: var(--muted);
+}
+
+.options input:checked + span {
+  border-color: var(--fg);
+  font-weight: 600;
+}
+
+.options input:focus-visible + span {
+  outline: 2px solid var(--fg);
+  outline-offset: 2px;
+}
+
+/* ---- Texto ---- */
+.muted {
+  color: var(--muted);
+}
+
+.big {
+  font-size: 2rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}

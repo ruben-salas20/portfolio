@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>¿Cuánto ocupa un modelo?</title>
+<link rel="stylesheet" href="/articulos/artefactos.css">
+<style>
+  p { margin: 0; font-size: 0.875rem; }
+</style>
+</head>
+<body>
+  <label class="field">Parámetros: <span id="b">8</span> mil millones
+    <input id="params" type="range" min="1" max="30" value="8">
+  </label>
+  <fieldset class="field">
+    <legend>Cuantización</legend>
+    <div class="options">
+      <label title="≈4,5 bits por peso"><input type="radio" name="bits" value="4.5" checked><span>Q4_K_M</span></label>
+      <label title="≈5,5 bits por peso"><input type="radio" name="bits" value="5.5"><span>Q5_K_M</span></label>
+      <label title="≈8,5 bits por peso"><input type="radio" name="bits" value="8.5"><span>Q8_0</span></label>
+      <label title="16 bits por peso"><input type="radio" name="bits" value="16"><span>F16</span></label>
+    </div>
+  </fieldset>
+  <label class="field">Equipo
+    <select id="device">
+      <option value="6">RTX 3050 · 6 GB de VRAM</option>
+      <option value="24">Portátil · 24 GB de RAM</option>
+      <option value="16">Sobremesa · 16 GB de RAM</option>
+    </select>
+  </label>
+  <output id="gb" class="big"></output>
+  <p id="fits"></p>
+  <p class="muted">Solo los pesos. El contexto ocupa memoria aparte.</p>
+<script>
+  const params = document.getElementById('params');
+  const device = document.getElementById('device');
+  function update() {
+    document.getElementById('b').textContent = params.value;
+    const bits = document.querySelector('input[name="bits"]:checked').value;
+    const gb = (params.value * bits) / 8;
+    const name = device.options[device.selectedIndex].text;
+    document.getElementById('gb').textContent = `${gb.toLocaleString('es', { maximumFractionDigits: 1 })} GB`;
+    document.getElementById('fits').textContent = gb <= device.value ? `Cabe en ${name}.` : `No cabe en ${name}.`;
+  }
+  params.addEventListener('input', update);
+  device.addEventListener('change', update);
+  document.querySelectorAll('input[name="bits"]').forEach((r) => r.addEventListener('change', update));
+  update();
+</script>
+</body>
+</html>

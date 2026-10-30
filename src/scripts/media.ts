@@ -6,6 +6,8 @@
  *   navegador, porque el <audio> lleva `controls`.
  * - YouTube: la portada que genera src/plugins/youtube.mjs se
  *   cambia por el reproductor de YouTube al pulsarla. Sin JS es un enlace.
+ * - Artefactos: igual, con la portada de src/plugins/artifact.mjs y la
+ *   página HTML del artefacto en un iframe.
  */
 
 const ICONS = `
@@ -110,6 +112,65 @@ function setupYoutube(link: HTMLAnchorElement) {
   });
 }
 
+// El tema que se ve ahora: el del botón o, si no se ha pulsado, el del sistema.
+function currentTheme() {
+  return (
+    document.documentElement.dataset.theme ??
+    (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+  );
+}
+
+function setupArtifact(link: HTMLAnchorElement) {
+  link.addEventListener('click', (event) => {
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey) return;
+    event.preventDefault();
+
+    const title = link.querySelector('.artifact-title')!;
+    const iframe = document.createElement('iframe');
+    iframe.src = link.href;
+    iframe.title = title.textContent ?? '';
+
+    // El artefacto es una página de este mismo dominio, así que se puede
+    // leer su altura y ajustar el iframe a ella: sin barra de desplazamiento
+    // dentro del artículo. Por eso no lleva `sandbox`, que lo impediría; es
+    // seguro porque solo se publican artefactos propios.
+    iframe.addEventListener('load', () => {
+      const doc = iframe.contentDocument;
+      if (!doc) return;
+      // El artefacto sigue el tema del sitio si usa `light-dark()` o
+      // `prefers-color-scheme`, como global.css.
+      const applyTheme = () => {
+        doc.documentElement.style.colorScheme = currentTheme();
+        doc.documentElement.dataset.theme = currentTheme();
+      };
+      applyTheme();
+      new MutationObserver(applyTheme).observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme'],
+      });
+      // La altura del <html> es la del contenido; `scrollHeight` nunca baja
+      // del alto del iframe y no lo dejaría encoger. El ResizeObserver es el
+      // del artefacto: algunos navegadores rechazan observar un elemento de
+      // otro documento.
+      const fit = () =>
+        (iframe.style.height = `${Math.ceil(doc.documentElement.getBoundingClientRect().height)}px`);
+      fit();
+      const win = iframe.contentWindow as (Window & typeof globalThis) | null;
+      if (win) new win.ResizeObserver(fit).observe(doc.documentElement);
+    });
+
+    const frame = document.createElement('div');
+    frame.className = 'artifact-frame loaded';
+    frame.append(iframe);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'artifact';
+    wrapper.append(frame, title);
+    link.replaceWith(wrapper);
+    iframe.focus();
+  });
+}
+
 // Al final: ICONS es una constante y no existe hasta que se ejecuta su línea.
 const article = document.querySelector<HTMLElement>('article[data-play]');
 if (article) {
@@ -117,4 +178,7 @@ if (article) {
   article
     .querySelectorAll<HTMLAnchorElement>('a.youtube[data-youtube-id]')
     .forEach(setupYoutube);
+  article
+    .querySelectorAll<HTMLAnchorElement>('a.artifact[data-artifact]')
+    .forEach(setupArtifact);
 }

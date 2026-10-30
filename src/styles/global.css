@@ -812,3 +812,67 @@ a.youtube:hover .youtube-title {
 .recipe-group .article-list li + li {
   margin-top: 16px;
 }
+
+/* ---- Artefactos HTML de los artículos (ver src/plugins/artifact.mjs) ----
+   Sin miniatura que mostrar, la portada es una cuadrícula de puntos con el
+   botón de play de YouTube. Cargado, el iframe toma la altura del artefacto
+   (la fija media.ts); los 320 px son solo mientras carga. */
+.artifact {
+  display: block;
+  margin: 1em 0;
+  text-decoration: none;
+}
+
+.artifact-frame {
+  position: relative;
+  display: block;
+  height: 200px;
+  overflow: hidden;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: radial-gradient(color-mix(in srgb, var(--muted) 40%, transparent) 1px, transparent 1px) 0 0 / 16px 16px;
+}
+
+.artifact-frame.loaded {
+  height: auto;
+  background: none;
+}
+
+.artifact-frame iframe {
+  display: block;
+  width: 100%;
+  height: 320px;
+  border: 0;
+}
+
+.artifact-play {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  translate: -50% -50%;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--fg);
+  transition: scale 150ms ease-out;
+}
+
+.artifact:hover .artifact-play {
+  scale: 1.08;
+}
+
+.artifact-title {
+  display: block;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+a.artifact:hover .artifact-title {
+  color: var(--fg);
+  text-decoration: underline;
+}

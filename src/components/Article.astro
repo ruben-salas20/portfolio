@@ -39,8 +39,9 @@ const isFallback = article.lang !== lang;
   <main>
     <p class="muted"><a href={articlesPath[lang]}>← {tr.articles.back}</a></p>
     {isFallback && <p class="notice">{tr.articles.onlyOtherLang}</p>}
-    <!-- Los data-* llevan los textos del reproductor de audio y del botón de
-         copiar en el idioma de la interfaz; los scripts no leen ui.ts. -->
+    <!-- Los data-* llevan los textos del reproductor de audio, de los
+         artefactos y del botón de copiar en el idioma de la interfaz; los
+         scripts no leen ui.ts. -->
     <article
       lang={article.lang}
       data-lang={lang}
