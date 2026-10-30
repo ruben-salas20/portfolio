@@ -1,0 +1,254 @@
+---
+title: "Qwen-Image 2.1 en una GPU de 6 GB"
+model: "Qwen-Image-2.1"
+kind: image
+summary: "Texto a imagen"
+order: 0
+---
+Receta medida para ejecutar [Qwen-Image 2.1](https://huggingface.co/Qwen/Qwen-Image-2.1) en local en una **RTX 3050 con 6 GB de VRAM y 16 GB de RAM**, con [stable-diffusion.cpp](https://github.com/leejet/stable-diffusion.cpp). Sin ComfyUI y sin entorno de Python: un binario compilado y tres ficheros de modelo.
+
+<div class="callout">
+
+**Consejo**
+
+**Recomendamos la [receta Turbo](/recetas/Qwen-Image-2.1-Turbo/) en lugar de esta.** Tarda ~60 s por imagen frente a ~148 s, y en una cata a ciegas ganó 10 de 12 comparaciones a esta receta. Esta página queda para quien quiera el modelo completo de 25 pasos.
+
+</div>
+
+Todos los números de esta página se midieron en esa máquina. Los scripts que los generaron están en [`scripts/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/scripts) y los resultados en bruto, un CSV por ronda, en [`bench/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench).
+
+![Imágenes generadas con la receta](https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/showcase-v2.webp)
+*La receta anterior (1,4 MP, sd.cpp `f89d9b1`), semilla 42, sin elegir las mejores. Arriba: foto de producto, retrato y anuncio con texto en español. Abajo: concept art e ilustración anime.*
+
+<div class="callout">
+
+**Importante**
+
+**Los pesos del modelo solo se pueden usar con fines no comerciales.** La [Qwen Research License](https://huggingface.co/Qwen/Qwen-Image-2.1/blob/main/LICENSE) (sección 2) permite investigación y evaluación. El uso comercial, incluidos anuncios o fotos de producto para un negocio, requiere una licencia aparte de Qwen (`model-business@notice.qwencloud.com`). Esta guía explica cómo ejecutar el modelo, no qué puedes hacer con lo que genera.
+
+</div>
+
+## La receta
+
+```bash
+sd-cli \
+  --diffusion-model qwen_image_2.1-Q4_0.gguf \
+  --vae qwen_image_2.1_vae_bf16.safetensors \
+  --llm Qwen3VL-8B-Instruct-Q4_K_M.gguf \
+  --params-backend "te=disk,diffusion=cpu,vae=cpu" \
+  --offload-to-cpu --vae-tiling --vae-tile-size 512 \
+  --cfg-scale 1 --sampling-method euler --steps 25 \
+  -W 1024 -H 1024 \
+  -p "tu prompt" -o salida.png
+```
+
+- **`--params-backend "te=disk,…"`** lleva el codificador de texto del fichero a la GPU sin copiarlo a la RAM del programa. Ahorra ~49 s por imagen y la imagen sale idéntica píxel a píxel.
+- **`--vae-tile-size 512`** decodifica en trozos de 512 px en lugar de 256: el VAE pasa de ~22 a ~13 s, sin costuras visibles.
+- **Sin EasyCache** (`--cache-mode easycache`). Ahorra ~45 % del tiempo, pero en una cata a ciegas la imagen sin él ganó 10 de 12 comparaciones, y escribe peor el texto fino de las infografías (14 de 21 textos frente a 16). Ver [Por qué estos ajustes](#por-qué-estos-ajustes).
+- **No añadas `--diffusion-fa`**: está obsoleto. Flash attention viene activada por defecto (`--flash-attn auto`).
+
+<div class="table-scroll">
+
+| | |
+|---|---|
+| Para qué | Quien quiera el modelo completo de 25 pasos; para el día a día, la [receta Turbo](/recetas/Qwen-Image-2.1-Turbo/) |
+| Modelo de difusión | Q4_0 |
+| Codificador de texto | Q4_K_M, leído del disco |
+| Pasos | 25 |
+| Cuadrada | 1024 × 1024 |
+| Vertical 9:16 | 768 × 1344 |
+| Horizontal 16:9 | 1344 × 768 |
+| Tiempo por imagen | **~148 s** (media 148,0 s, rango 146,2-150,1) |
+| RAM máxima del programa | 5,2 GB |
+
+</div>
+
+Usa CFG 1. El tiempo es de reloj e incluye toda la ejecución: carga, codificación del texto, muestreo y VAE. Medias de 6 prompts × 3 semillas. Las medidas tienen que ser múltiplos de 32. Como en la receta Turbo, la velocidad depende de que los ficheros quepan en la caché del sistema (unos 10 GB de RAM libre); ver el [aviso de la receta Turbo](/recetas/Qwen-Image-2.1-Turbo/#la-receta).
+
+<img class="only-light" alt="Segundos por imagen antes y ahora: normal de 273 a 148 s, Turbo de 145 a 60 s" src="https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/before-after.es.webp" loading="lazy">
+<img class="only-dark" alt="Segundos por imagen antes y ahora: normal de 273 a 148 s, Turbo de 145 a 60 s" src="https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/before-after-dark.es.webp" loading="lazy">
+
+## Instalación
+
+### 1. Compilar stable-diffusion.cpp con CUDA
+
+Usa [`8cd731e`](https://github.com/leejet/stable-diffusion.cpp/commit/8cd731e) (2026-10-15). La receta actual se midió con él; las versiones posteriores no se han probado. Hace falta como mínimo [`0a9340c`](https://github.com/leejet/stable-diffusion.cpp/commit/0a9340c5) (2026-09-25), que arregla las manchas blancas que se describen en [Problemas resueltos](#problemas-resueltos).
+
+```bash
+git clone --recursive https://github.com/leejet/stable-diffusion.cpp
+cd stable-diffusion.cpp
+git checkout 8cd731e && git submodule update --init --recursive
+cmake -B build -G Ninja -DSD_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=86 -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j
+# binarios: build/bin/sd-cli y build/bin/sd-server
+```
+
+`86` es la arquitectura de la serie RTX 30. Usa `89` para las RTX 40, o quita la opción para que CMake la detecte.
+
+### 2. Descargar los ficheros del modelo
+
+<div class="table-scroll">
+
+| Pieza | Fichero | Tamaño | SHA-256 |
+|---|---|---|---|
+| Modelo de difusión | [`qwen_image_2.1-Q4_0.gguf`](https://huggingface.co/leejet/Qwen-Image-2.1-GGUF/blob/main/qwen_image_2.1-Q4_0.gguf) (leejet) | 4,2 GB | `8d992dc9…cf29e9147` |
+| Codificador de texto | [`Qwen3VL-8B-Instruct-Q4_K_M.gguf`](https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct-GGUF/blob/main/Qwen3VL-8B-Instruct-Q4_K_M.gguf) (Qwen) | 5,0 GB | `67d1659b…0e9e2` |
+| VAE | [`qwen_image_2.1_vae_bf16.safetensors`](https://huggingface.co/Comfy-Org/Qwen-Image-2.1/blob/main/vae/qwen_image_2.1_vae_bf16.safetensors) (Comfy-Org) | 0,68 GB | `bb21f747…e4876b7c9` |
+
+</div>
+
+Los hashes completos están en [`SHA256SUMS`](https://github.com/ruben-salas20/recipes/blob/main/Qwen-Image-2.1/SHA256SUMS). El VAE es exclusivo de la 2.1: los de Qwen-Image 1 y Wan 2.2 no sirven.
+
+### 3. Liberar la GPU
+
+La receta usa la tarjeta entera. Cierra cualquier otro programa que ocupe VRAM (un servidor de LLM, Whisper) antes de generar, o la ejecución fallará por falta de memoria.
+
+## Por qué estos ajustes
+
+### Ronda de octubre de 2026: de 273 a 148 s
+
+Con sd.cpp `8cd731e`, cambiando una opción cada vez sobre la receta anterior (1,4 MP). La receta anterior copiaba los pesos (~9 GB) a la RAM del programa; con eso, los ficheros no cabían también en la caché del sistema, y en cada imagen se releían ~9 GB del disco duro. Datos en bruto: [`bench/final-1016/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/final-1016); las catas, en la [carpeta del Turbo](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1-Turbo/bench/cata-1016).
+
+<div class="table-scroll">
+
+| Cambio | Tiempo por imagen | Imagen |
+|---|---|---|
+| Receta anterior con sd.cpp `8cd731e`, sin `--diffusion-fa` | 271 s | La misma escena |
+| **Codificador desde disco** (`te=disk`) | **222 s** | Idéntica píxel a píxel |
+| **VAE en trozos de 512 px** | −9 s (VAE de ~22 a ~13 s) | Casi idéntica (LPIPS 0,001), sin costuras |
+| **1 MP en vez de 1,4 MP** | **148,0 s** (la receta actual) | 3 de 9 imágenes con el texto perfecto, frente a 6 de 9 a 1,4 MP. A ciegas, la de 1,4 MP tampoco ganó ninguna comparación al Turbo |
+
+</div>
+
+LPIPS mide cuánto se diferencian dos imágenes tal como las percibe una persona: 0 es idéntica, y cuanto más alto, más diferentes.
+
+Lo que probamos y no entró en la receta, todo a 1 MP:
+
+<div class="table-scroll">
+
+| Opción | Tiempo por imagen | Resultado |
+|---|---|---|
+| EasyCache, umbral por defecto (0,20) | ~80 s | Rompe el texto fino: 3 de 7 textos en la infografía, con garabatos |
+| EasyCache, umbral 0,15 | ~80 s | 14 de 21 textos frente a 16; **a ciegas, la receta sin EasyCache ganó 10 de 12** (2 empates) |
+| EasyCache, umbral 0,05 | ~100 s | Casi idéntica a la receta (LPIPS < 0,01), 15 de 21 textos |
+| 20 pasos | ~123 s | 16 de 21 textos; cambia más la composición (LPIPS hasta 0,09) |
+
+</div>
+
+EasyCache se salta el cálculo de los pasos en los que la imagen apenas cambia; el umbral decide cuánto cambio se tolera. Un LPIPS de 0,015-0,045 (umbral 0,15) bastó para que la diferencia se notara a ciegas.
+
+### Primera ronda
+
+Estos resultados son de la primera ronda, con sd.cpp `c92d73c` (2026-09-22) y `c678dfe`. Desde entonces sd.cpp corrigió el calendario de ruido de Qwen-Image 2.1 ([#2048](https://github.com/leejet/stable-diffusion.cpp/pull/2048)), así que la misma semilla da una imagen ligeramente distinta. En nuestras comprobaciones, la velocidad y la memoria no cambiaron; los números de calidad se volvieron a medir en la ronda final (sección siguiente). Datos en bruto: [`bench/fase1/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase1), [`bench/fase1b/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase1b) y [`bench/fase2/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase2).
+
+Medido con el mismo prompt de anuncio a 768 × 1344, semilla 42, cambiando una sola opción cada vez:
+
+<img class="only-light" alt="El mismo anuncio con cuatro configuraciones y sus tiempos" src="https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/speed.es.webp" loading="lazy">
+<img class="only-dark" alt="El mismo anuncio con cuatro configuraciones y sus tiempos" src="https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/speed-dark.es.webp" loading="lazy">
+
+<div class="table-scroll">
+
+| Cambio | Tiempo | s/paso | Resultado |
+|---|---|---|---|
+| Base (Q4_0, 25 pasos, CFG 1) | 316 s | 10,5 | — |
+| **+ `--diffusion-fa`** | **221 s** | **6,8** | **−30 % en total, −35 % de muestreo**, visualmente idéntica |
+| + FA, 20 pasos | 193 s | 7,0 | Casi igual que con 25 pasos en este prompt |
+| + FA, 15 pasos | 166 s | 7,5 | Sigue muy parecida |
+| Q4_K en vez de Q4_0 | 327 s | 11,0 | Una imagen distinta, no mejor |
+| Q5_0 en vez de Q4_0 | 333 s | 11,2 | Igual, y 0,8 GB más de RAM |
+| + FA, 1,4 MP (896 × 1568) | 293 s | 9,5 | La única que escribió bien "Envío" |
+| 2,4 MP (1152 × 2048) sin FA | — | — | **Sin memoria** (pedía 11,6 GB de VRAM) |
+| + FA, 2,4 MP | 502 s | 17,1 | Cabe, pero ver más abajo |
+
+</div>
+
+- **Flash attention es la mayor mejora.** No viene activada por defecto. Además, es lo que permite que 2,4 MP quepa en 6 GB.
+- **CFG 1, no 6.** El ejemplo de sd.cpp usa `--cfg-scale 6.0`; la plantilla oficial de ComfyUI usa 1. Con un CFG mayor que 1, cada paso se calcula dos veces, así que CFG 1 va más o menos el doble de rápido. En nuestras pruebas también respetó mejor el estilo pedido (con CFG 6 ignoró "soft pastel colors").
+- **La resolución importa más que los pasos.** A 1024 × 576 las imágenes salían lavadas; a ~1 MP, no. A ~1 MP, 15, 20 y 25 pasos se veían casi iguales.
+- **Q4_K y Q5_0 no mejoraron nada** frente a Q4_0.
+- **1,4 MP fue mejor que 2,4 MP en texto en aquella ronda.**
+
+En aquella ronda comparamos tres candidatas (borrador a 15 pasos y ~1 MP, la receta por defecto y la máxima a ~2,4 MP). La receta máxima tardó 8 min 25 s y salió peor que la receta por defecto en todas las medidas, así que más píxeles no compensan con Q4_0. El borrador (15 pasos, 2 min 45 s) ya no se recomienda: si quieres velocidad, usa la [receta Turbo](/recetas/Qwen-Image-2.1-Turbo/), que es más rápida y mejor.
+
+![Texto del botón del anuncio en las tres recetas anteriores](https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/text-accuracy.webp)
+*El texto pequeño en la primera ronda: solo la receta por defecto escribió "Envío" con tilde en las tres semillas.*
+
+## Resultados de calidad
+
+Medidos con la receta actual: 6 prompts × 3 semillas, 18 imágenes, comparadas con la receta Turbo. La tabla completa y las catas están en la [receta Turbo](/recetas/Qwen-Image-2.1-Turbo/#comparativa-con-la-receta-normal).
+
+- **Preferencia a ciegas: 1 de 12 comparaciones** frente a la receta Turbo (10 para Turbo y 1 empate). 12 parejas en orden aleatorio, con un solo votante. En la ronda anterior, a 1,4 MP, esta receta ganó 9 de 18 frente a las dos variantes del Turbo de entonces; con las mismas imágenes de esta receta, ahora pierde. La explicación está en la receta Turbo: cambió el criterio del votante, no las imágenes.
+- **Texto: 3 de 9 imágenes perfectas.** Las 9 imágenes con texto son el anuncio, el producto y la ilustración médica (3 semillas cada uno). Fallos: dos anuncios ("Envio" sin tilde) y dos ilustraciones médicas ("Tibia" repetida en una; "Menisco" repetida, "Cartíllago" y una etiqueta ilegible en otra). Turbo acertó 6 de 9 con las mismas imágenes de prueba. El texto se revisó letra por letra, a tamaño completo, no con OCR.
+- **Infografías: no las recomendamos.** En una infografía con 7 textos, 16 de 21 bien en español y 21 de 21 en inglés, igual que Turbo, pero las figuras no tienen relación con el texto o no explican nada. Ver la [receta Turbo](/recetas/Qwen-Image-2.1-Turbo/#para-qué-sirve).
+- **Manchas blancas: 0 de 18 imágenes.**
+
+## Para qué sirve
+
+Prompts probados: fotos de producto, retratos, anuncios con texto en español, concept art, ilustración anime y escenas de ciudad. El texto es el punto fuerte del modelo en anuncios y etiquetas de producto, tildes incluidas, pero las listas largas de etiquetas pequeñas (la ilustración médica) siguen fallando.
+
+**Imágenes técnicas y académicas.** Probamos 12 temas de distintas disciplinas, sin texto en la imagen, 2 semillas cada uno, con 15 pasos (primera ronda). Datos en bruto: [`bench/tecnico/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/tecnico).
+
+<img class="only-light" alt="12 temas técnicos con su veredicto" src="https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/technical.es.webp" loading="lazy">
+<img class="only-dark" alt="12 temas técnicos con su veredicto" src="https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/technical-dark.es.webp" loading="lazy">
+
+- **Sirven (7):** corazón, célula, flor, puente colgante, prisma, capas de la Tierra y sistema solar. Las estructuras grandes y conocidas salen bien.
+- **Ilustrativas (4):** rodilla (la rótula está mal colocada), motor, dodecaedro y circuito. Se reconocen y valen para público general, pero un especialista vería errores.
+- **No sirve (1):** cafeína. La molécula no era cafeína en ninguna de las dos semillas.
+
+El modelo Turbo salió mejor en la misma prueba (8 / 3 / 1); ver la [receta Turbo](/recetas/Qwen-Image-2.1-Turbo/#para-qué-sirve).
+
+En resumen: sirve para figuras de libro de texto de estructuras grandes y conocidas. No es fiable cuando los detalles tienen que ser exactos: moléculas concretas, piezas mecánicas precisas o la relación espacial entre partes. **Genera sin etiquetas y ponlas tú:** cuando se le piden, el modelo las escribe bien pero las coloca apuntando a la parte equivocada.
+
+## Problemas resueltos
+
+**Manchas blancas: arregladas en sd.cpp [`0a9340c`](https://github.com/leejet/stable-diffusion.cpp/commit/0a9340c5) ([#2054](https://github.com/leejet/stable-diffusion.cpp/pull/2054)).** Con versiones anteriores, algunas imágenes salían con un rectángulo de blanco puro, de bordes duros y 12-16 px de ancho:
+
+![Una mancha blanca en una ilustración de rodilla](https://raw.githubusercontent.com/ruben-salas20/recipes/main/Qwen-Image-2.1/assets/white-patch.webp)
+
+- **Causa:** desbordamiento en FP16 en las convoluciones del VAE de Qwen-Image 2.1. El arreglo reduce la escala de sus entradas y la restaura después.
+- **Verificado:** regeneramos 3 imágenes que tenían mancha, con las mismas semillas y ajustes, en `3f8527a`. Las 3 salieron limpias y a la misma velocidad. Basta con actualizar; no hace falta ninguna opción. En la ronda final, 0 de 18 imágenes con esta receta la tuvieron.
+- Afectó a 12 de las 54 imágenes de la primera comparación, siempre alineadas a la cuadrícula de 16 px del modelo.
+- **Una corrección:** una versión anterior de esta página decía que se había descartado la precisión del VAE en GPU, porque decodificar en CPU daba la misma mancha. Esa conclusión era errónea: el desbordamiento ocurre también en las convoluciones FP16 de ese camino, así que la prueba no aislaba lo que creíamos.
+
+Gracias a leejet por el arreglo y por contestar nuestro aviso en Hugging Face.
+
+## Otras cosas que conviene saber
+
+- **Mantén `--vae-tiling`.** Decodificar una imagen de 1 MP de una vez necesita más de 6 GB, y sd.cpp acaba recurriendo a los trozos igualmente. Desde [`19bbbca`](https://github.com/leejet/stable-diffusion.cpp/commit/19bbbca1), `--vae-tile-size` se mide en píxeles de la imagen, no en celdas del latente: si copiaste `--vae-tile-size 24x24` de una versión anterior de esta página, quítalo. **Nunca decodifiques en CPU sin trozos:** a 1024² agotó los 16 GB de RAM y el kernel mató el proceso.
+- **Las primeras imágenes tras reiniciar o cambiar de modelo tardan más** si los pesos están en un disco duro mecánico: hay que leer ~10 GB hasta llenar la caché del sistema. En nuestras pruebas, la primera tardó unos 20 s más.
+- **No midas mientras descargas.** Las descargas al mismo disco expulsan los pesos de la caché, y la receta vuelve a leerlos del disco.
+- **La columna de VRAM siempre marca ~5,1-5,2 GB.** sd.cpp ocupa toda la memoria libre y trae el resto desde la RAM. Es lo que usa, no lo que necesita; la VRAM mínima no se ha medido.
+- **Los PNG de salida son RGBA** aunque la imagen sea opaca, porque Qwen-Image 2.1 admite transparencia.
+
+## Reproducir las medidas
+
+```bash
+../Qwen-Image-2.1-Turbo/scripts/final-1016.sh normal   # la receta actual: 6 prompts × 3 semillas (reanudable)
+scripts/bench.sh <ronda> <nombre> <modelo> <pasos> <prompt_id> [W H] [-- opciones extra de sd-cli]
+scripts/fase1.sh      # velocidad y memoria, una variable cada vez (primera ronda)
+scripts/fase1b.sh     # combinaciones con flash attention (primera ronda)
+scripts/fase2.sh      # 3 recetas iniciales × 6 prompts × 3 semillas (primera ronda, ~5 h, reanudable)
+scripts/tecnico.sh    # 12 temas técnicos × 2 semillas (primera ronda)
+```
+
+`bench.sh` acepta el sufijo de un fichero de modelo o la ruta completa de un `.gguf`. La variable de entorno `LLM` elige el codificador de texto; por defecto es el Q4_K_M. Los scripts de la ronda actual (`final-1016.sh`) y de la anterior (`final.sh`) están en la [carpeta del Turbo](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1-Turbo/scripts).
+
+Los prompts están en [`prompts/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/prompts). Cada ejecución añade una fila a un `resultados.csv` con el tiempo, la RAM y la VRAM máximas y las opciones exactas; las imágenes y los logs se guardan al lado, pero no se incluyen en este repo. Datos por ronda: [`bench/final-1016/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/final-1016) (la receta actual), [`bench/fase1/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase1), [`bench/fase1b/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase1b), [`bench/fase2/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase2) (con la primera prueba a ciegas en [`bench/fase2/ciego/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/fase2/ciego)) y [`bench/tecnico/`](https://github.com/ruben-salas20/recipes/tree/main/Qwen-Image-2.1/bench/tecnico). Los scripts usan las rutas de la máquina de pruebas; cambia `D` y `SD` al principio de `bench.sh`.
+
+## Máquina de pruebas
+
+<div class="table-scroll">
+
+| | |
+|---|---|
+| GPU | NVIDIA RTX 3050 6 GB (5,8 GiB utilizables), driver 595.71.05, CUDA 13.0 |
+| CPU / RAM | 6 núcleos, 16 GB |
+| Almacenamiento | Pesos en un disco duro de 7200 rpm |
+| Sistema | Ubuntu 24.04 |
+| sd.cpp | Receta actual: `8cd731e` (2026-10-15). Ronda anterior: `f89d9b1` (2026-10-09). Primera ronda: `c92d73c` (fase 2) y `c678dfe` (fase 1 y prueba técnica; una imagen comparada entre las dos salió idéntica bit a bit). Arreglo de las manchas verificado en `3f8527a` |
+
+</div>
+
+## Licencia
+
+Los scripts de esta carpeta se publican con la [licencia MIT](https://github.com/ruben-salas20/recipes/blob/main/LICENSE). Los pesos del modelo no se incluyen y mantienen sus propias licencias: Qwen-Image 2.1 y el VAE, la [Qwen Research License](https://huggingface.co/Qwen/Qwen-Image-2.1/blob/main/LICENSE) (no comercial); el codificador de texto Qwen3-VL, Apache 2.0.

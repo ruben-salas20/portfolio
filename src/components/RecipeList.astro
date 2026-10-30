@@ -1,0 +1,55 @@
+---
+/**
+ * RecipeList — la página con todas las recetas, separadas en modelos de
+ * texto y de imagen. Las páginas de cada idioma solo hacen
+ * <RecipeList lang="..." />.
+ */
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from './SiteHeader.astro';
+import { t, type Lang } from '../i18n/ui';
+import { getRecipes, recipeHref, recipesPath, recipesRepo } from '../data/recipes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const tr = t(lang);
+const recipes = await getRecipes(lang);
+const otherLang: Lang = lang === 'es' ? 'en' : 'es';
+const groups = (['text', 'image'] as const).map((kind) => ({
+  title: tr.recipes[kind],
+  recipes: recipes.filter((recipe) => recipe.data.kind === kind),
+}));
+---
+
+<Layout
+  title={`${tr.recipes.title} — Rubén Salas`}
+  description={tr.recipes.description}
+  lang={lang}
+  paths={recipesPath}
+>
+  <SiteHeader lang={lang} otherLangHref={recipesPath[otherLang]} />
+
+  <main>
+    <h1 class="page-title">{tr.recipes.title}</h1>
+    <p class="recipes-intro">{tr.recipes.intro}</p>
+    {
+      groups.map((group) => (
+        <section class="recipe-group">
+          <h2>{group.title}</h2>
+          <ul class="article-list">
+            {group.recipes.map((recipe) => (
+              <li>
+                <p class="article-head">
+                  <a href={recipeHref(lang, recipe.data.model)}>{recipe.data.model}</a>
+                </p>
+                <p class="muted">{recipe.data.summary}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))
+    }
+    <p class="muted"><a href={recipesRepo}>{tr.recipes.repo}</a></p>
+  </main>
+</Layout>

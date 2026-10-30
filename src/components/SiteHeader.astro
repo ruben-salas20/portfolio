@@ -8,6 +8,7 @@
  */
 import { t, contactInfo, type Lang } from '../i18n/ui';
 import { articlesPath, getArticles } from '../data/articles';
+import { recipesPath } from '../data/recipes';
 
 interface Props {
   lang: Lang;
@@ -38,6 +39,7 @@ const hasArticles = (await getArticles(lang)).length > 0;
   </div>
   <nav>
     {hasArticles && <a href={articlesPath[lang]}>{tr.header.articles}</a>}
+    <a href={recipesPath[lang]}>{tr.header.recipes}</a>
     <a href={`mailto:${contactInfo.email}`}>{tr.header.email}</a>
     <a href={contactInfo.github}>GitHub</a>
     <a href={contactInfo.linkedin}>LinkedIn</a>

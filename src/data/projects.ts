@@ -37,6 +37,8 @@ export interface Project {
   stack: string[];
   /** Sitio en vivo, si existe. */
   live?: string;
+  /** Página del proyecto dentro de este sitio, si tiene (ruta por idioma). */
+  page?: Record<Lang, string>;
   desc: { en: string; es: string };
 }
 
@@ -71,6 +73,7 @@ export const projects: Project[] = [
     year: '2026',
     writtenByMe: false,
     stack: ['llama.cpp', 'stable-diffusion.cpp', 'GGUF', 'Python'],
+    page: { es: '/recetas/', en: '/en/recipes/' },
     desc: {
       en: 'Measured recipes for running open image and text models on modest hardware: the exact command, the winning settings and the numbers behind them. I measure them on an RTX 3050 with 6 GB and on a CPU-only laptop.',
       es: 'Recetas medidas para ejecutar modelos abiertos, de imagen y de texto, en hardware modesto: el comando exacto, los ajustes ganadores y los números que los respaldan. Las mido en una RTX 3050 de 6 GB y en un portátil solo con CPU.',

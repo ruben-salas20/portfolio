@@ -528,6 +528,72 @@ a:focus-visible {
   background: color-mix(in srgb, var(--fg) 8%, transparent);
 }
 
+/* Tablas. Las de las recetas tienen muchas columnas: su contenedor se
+   desplaza en horizontal en vez de ensanchar la página. */
+.prose .table-scroll {
+  margin: 1em 0;
+  overflow-x: auto;
+}
+
+.prose table {
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.prose th,
+.prose td {
+  padding: 6px 12px 6px 0;
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+  vertical-align: top;
+}
+
+.prose th {
+  font-weight: 600;
+}
+
+/* Avisos de las recetas: los bloques `> [!NOTE]` de GitHub. */
+.prose .callout {
+  margin: 1em 0;
+  padding: 8px 12px;
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+
+.prose .callout > :first-child {
+  margin-top: 0;
+}
+
+.prose .callout > :last-child {
+  margin-bottom: 0;
+}
+
+/* Gráficas con una versión para cada tema. Siguen al botón de tema, no
+   solo al sistema, igual que los colores (ver :root arriba). Una imagen con
+   `loading="lazy"` y `display: none` no se descarga. */
+.only-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .only-dark {
+  display: inline;
+}
+
+:root[data-theme="dark"] .only-light {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .only-dark {
+    display: inline;
+  }
+
+  :root:not([data-theme="light"]) .only-light {
+    display: none;
+  }
+}
+
 /* Bloques de código. Shiki los colorea con dos temas a la vez y deja cada
    color en una variable (ver `markdown` en astro.config.mjs); aquí se elige
    el del tema activo, como el resto de colores. */
@@ -670,4 +736,26 @@ a:focus-visible {
 a.youtube:hover .youtube-title {
   color: var(--fg);
   text-decoration: underline;
+}
+
+/* ---- Recetas: lista agrupada por tipo de modelo ---- */
+.recipes-intro {
+  margin: 0 0 8px;
+}
+
+.recipe-group h2 {
+  margin: 32px 0 0;
+  padding-top: 24px;
+  border-top: 1px solid var(--rule);
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.recipe-group .article-list {
+  margin: 16px 0 24px;
+}
+
+.recipe-group .article-list li + li {
+  margin-top: 16px;
 }

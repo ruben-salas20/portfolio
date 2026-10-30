@@ -22,6 +22,7 @@ export const ui = {
     header: {
       available: 'Available for work',
       articles: 'Articles',
+      recipes: 'Recipes',
       email: 'Email',
       otherLang: 'ES',
       themeToggle: 'Switch between light and dark mode',
@@ -57,6 +58,7 @@ export const ui = {
       aiDirected: 'AI-directed',
       privateRepo: 'private repository',
       liveSite: 'live site',
+      recipesPage: 'read the recipes',
     },
     skills: {
       title: 'Technologies',
@@ -74,6 +76,18 @@ export const ui = {
       translatedWithAI: 'Translated with AI',
       // Reproductor de audio de los artículos (ver src/scripts/media.ts).
       player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
+    },
+    recipes: {
+      title: 'Recipes',
+      description: 'Measured recipes for running open models on modest local hardware.',
+      intro:
+        'Measured recipes for running open models on modest local hardware: the exact command, the settings that won and the numbers behind them. I measure them on an RTX 3050 with 6 GB and on a CPU-only laptop.',
+      image: 'Image models',
+      text: 'Text models',
+      kindTag: { image: 'Image model', text: 'Text model' },
+      back: 'All recipes',
+      repo: 'Repository on GitHub',
+      onGithub: 'View on GitHub',
     },
     // Versión de terminal (ver src/data/terminal.ts). `otherLang` va en el
     // otro idioma: lo lee quien no entiende este.
@@ -103,6 +117,7 @@ export const ui = {
     header: {
       available: 'Disponible para trabajar',
       articles: 'Artículos',
+      recipes: 'Recetas',
       email: 'Correo',
       otherLang: 'EN',
       themeToggle: 'Cambiar entre modo claro y oscuro',
@@ -137,6 +152,7 @@ export const ui = {
       aiDirected: 'dirigido con IA',
       privateRepo: 'repositorio privado',
       liveSite: 'sitio web',
+      recipesPage: 'leer las recetas',
     },
     skills: {
       title: 'Tecnologías',
@@ -152,6 +168,18 @@ export const ui = {
       otherLangTag: 'En inglés',
       translatedWithAI: 'Traducido con IA',
       player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
+    },
+    recipes: {
+      title: 'Recetas',
+      description: 'Recetas medidas para ejecutar modelos abiertos en hardware local modesto.',
+      intro:
+        'Recetas medidas para ejecutar modelos abiertos en hardware local modesto: el comando exacto, los ajustes ganadores y los números que los respaldan. Las mido en una RTX 3050 de 6 GB y en un portátil solo con CPU.',
+      image: 'Modelos de imagen',
+      text: 'Modelos de texto',
+      kindTag: { image: 'Modelo de imagen', text: 'Modelo de texto' },
+      back: 'Todas las recetas',
+      repo: 'Repositorio en GitHub',
+      onGithub: 'Ver en GitHub',
     },
     terminal: {
       allArticles: 'Todos los artículos',

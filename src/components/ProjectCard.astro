@@ -46,5 +46,6 @@ const repoUrl = repo ? `https://github.com/ruben-salas20/${repo}` : null;
     {project.stack.join(' · ')}
     {!repoUrl && <> — {tr.work.privateRepo}</>}
     {project.live && <> — <a href={project.live}>{tr.work.liveSite}</a></>}
+    {project.page && <> — <a href={project.page[lang]}>{tr.work.recipesPage}</a></>}
   </p>
 </article>

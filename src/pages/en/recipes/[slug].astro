@@ -1,0 +1,15 @@
+---
+// Página "/en/recipes/<modelo>/" — una receta.
+import type { GetStaticPaths } from 'astro';
+import Recipe from '../../../components/Recipe.astro';
+import { getRecipes } from '../../../data/recipes';
+
+export const getStaticPaths = (async () => {
+  const recipes = await getRecipes('en');
+  return recipes.map((recipe) => ({ params: { slug: recipe.data.model }, props: { recipe } }));
+}) satisfies GetStaticPaths;
+
+const { recipe } = Astro.props;
+---
+
+<Recipe lang="en" recipe={recipe} />

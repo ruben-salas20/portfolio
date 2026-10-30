@@ -29,4 +29,24 @@ const articles = defineCollection({
   }),
 });
 
-export const collections = { articles };
+// Recetas del repo ruben-salas20/recipes: una carpeta por modelo con es.md
+// y en.md. MAQUETA: por ahora son copias convertidas a mano; el plan es
+// descargarlas del repo al construir el sitio.
+const recipes = defineCollection({
+  loader: glob({
+    pattern: '*/{es,en}.md',
+    base: './src/content/recipes',
+    generateId: ({ entry }) => entry.replace(/\.md$/, ''),
+  }),
+  schema: z.object({
+    title: z.string(),
+    // Nombre de la carpeta en el repo; también es el slug.
+    model: z.string(),
+    kind: z.enum(['image', 'text']),
+    summary: z.string(),
+    // Posición en la lista, la misma que en el README del repo.
+    order: z.number(),
+  }),
+});
+
+export const collections = { articles, recipes };

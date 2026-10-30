@@ -1,0 +1,40 @@
+---
+/**
+ * Recipe — la página de una receta. El texto es el README del repo, con las
+ * gráficas y los enlaces ya adaptados al sitio.
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import SiteHeader from './SiteHeader.astro';
+import { t, type Lang } from '../i18n/ui';
+import { recipeHref, recipesPath, recipesRepo } from '../data/recipes';
+
+interface Props {
+  lang: Lang;
+  recipe: CollectionEntry<'recipes'>;
+}
+const { lang, recipe } = Astro.props;
+const { model, title, summary } = recipe.data;
+const tr = t(lang);
+const { Content } = await render(recipe);
+const paths = { es: recipeHref('es', model), en: recipeHref('en', model) };
+const readme = lang === 'es' ? 'README.es.md' : 'README.md';
+---
+
+<Layout title={`${title} — Rubén Salas`} description={summary} lang={lang} paths={paths}>
+  <SiteHeader lang={lang} otherLangHref={paths[lang === 'es' ? 'en' : 'es']} />
+
+  <main>
+    <p class="muted"><a href={recipesPath[lang]}>← {tr.recipes.back}</a></p>
+    <article>
+      <h1 class="page-title">{title}</h1>
+      <p class="article-meta muted">
+        <span class="tag">{tr.recipes.kindTag[recipe.data.kind]}</span>
+        <a href={`${recipesRepo}/blob/main/${model}/${readme}`}>{tr.recipes.onGithub}</a>
+      </p>
+      <div class="prose">
+        <Content />
+      </div>
+    </article>
+  </main>
+</Layout>
