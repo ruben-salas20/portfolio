@@ -23,4 +23,4 @@ El sitio dice lo que Rubén sabe y hace, nada más.
 
 ## Escena
 
-La escena en pixel art ilustra el párrafo «Cómo trabajo»: si cambia uno, cambia el otro. Clawd, la mascota de Anthropic, se usa tal cual por decisión de Rubén. La primera franja es la de Rubén, en los márgenes y en móvil.
+La escena está oculta por decisión de Rubén (`showScene` en `Portfolio.astro`). La escena en pixel art ilustra el párrafo «Cómo trabajo»: si cambia uno, cambia el otro. Clawd, la mascota de Anthropic, se usa tal cual por decisión de Rubén. La primera franja es la de Rubén, en los márgenes y en móvil.

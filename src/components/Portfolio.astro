@@ -21,6 +21,10 @@ const tr = t(lang);
 
 // El español vive en la raíz y el inglés en /en/.
 const otherLangHref = lang === 'es' ? '/en/' : '/';
+
+// La escena en pixel art está oculta. El código se conserva para poder
+// volver a mostrarla con `true`.
+const showScene = false;
 ---
 
 <Layout title={tr.meta.title} description={tr.meta.description} lang={lang}>
@@ -28,15 +32,15 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
 
   <!-- Franja de la escena para móvil y tableta; en escritorio la escena va
        en los márgenes (ver Scene.astro). -->
-  <div class="zone zone-mobile" aria-hidden="true" hidden></div>
+  {showScene && <div class="zone zone-mobile" aria-hidden="true" hidden />}
 
   <main>
-    <Section title={tr.about.title} scene="left">
+    <Section title={tr.about.title} scene={showScene ? 'left' : undefined}>
       <p>{tr.about.intro}</p>
       <p>{tr.about.howIWork}</p>
     </Section>
 
-    <Section title={tr.now.title} scene="right">
+    <Section title={tr.now.title} scene={showScene ? 'right' : undefined}>
       <ul class="now">
         {
           tr.now.items.map((item) => (
@@ -48,7 +52,7 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
       </ul>
     </Section>
 
-    <Section title={tr.work.title} scene="left">
+    <Section title={tr.work.title} scene={showScene ? 'left' : undefined}>
       {projects.map((project) => <ProjectCard project={project} lang={lang} />)}
     </Section>
 
@@ -62,6 +66,6 @@ const otherLangHref = lang === 'es' ? '/en/' : '/';
     </Section>
   </main>
 
-  <Scene lang={lang} />
+  {showScene && <Scene lang={lang} />}
 </Layout>
 
