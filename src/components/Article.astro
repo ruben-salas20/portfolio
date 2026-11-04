@@ -13,7 +13,7 @@ import { render } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
 import SiteHeader from './SiteHeader.astro';
 import { t, type Lang } from '../i18n/ui';
-import { articleHref, articlesPath, formatDate, type ArticleView } from '../data/articles';
+import { articleHref, articlesPath, formatDate, readingMinutes, type ArticleView } from '../data/articles';
 
 interface Props {
   lang: Lang;
@@ -57,6 +57,8 @@ const isFallback = article.lang !== lang;
         <time datetime={entry.data.date.toISOString().slice(0, 10)}>
           {formatDate(entry.data.date, lang)}
         </time>
+        <span aria-hidden="true">·</span>
+        <span>{tr.articles.readingTime.replace('{n}', String(readingMinutes(entry.body ?? '')))}</span>
         {entry.data.translatedWithAI && <span class="tag">{tr.articles.translatedWithAI}</span>}
       </p>
       <div class="prose">

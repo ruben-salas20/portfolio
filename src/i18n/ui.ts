@@ -74,6 +74,8 @@ export const ui = {
       onlyOtherLang: 'This article is only available in Spanish.',
       otherLangTag: 'Spanish',
       translatedWithAI: 'Translated with AI',
+      // Junto a la fecha; {n} son los minutos (ver readingMinutes).
+      readingTime: '{n} min read',
       // Reproductor de audio de los artículos (ver src/scripts/media.ts).
       player: { play: 'Play', pause: 'Pause', seek: 'Position', of: 'of' },
     },
@@ -169,6 +171,7 @@ export const ui = {
       onlyOtherLang: 'Este artículo solo está en inglés.',
       otherLangTag: 'En inglés',
       translatedWithAI: 'Traducido con IA',
+      readingTime: '{n} min de lectura',
       player: { play: 'Reproducir', pause: 'Pausar', seek: 'Posición', of: 'de' },
     },
     code: { copy: 'Copiar', copied: 'Copiado' },

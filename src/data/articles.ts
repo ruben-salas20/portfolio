@@ -75,3 +75,19 @@ export function formatDate(date: Date, lang: Lang) {
     timeZone: 'UTC',
   }).format(date);
 }
+
+/**
+ * Minutos de lectura del Markdown de un artículo, a 200 palabras por minuto
+ * (un ritmo tranquilo, pensado para quien lee sin prisa). No cuenta los
+ * bloques de código, las direcciones de los enlaces ni las etiquetas HTML;
+ * el tiempo de jugar con un artefacto tampoco entra. Nunca baja de 1.
+ */
+export function readingMinutes(markdown: string) {
+  const text = markdown
+    .replace(/```[\s\S]*?```/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\]\([^)]*\)/g, ']')
+    .replace(/^\[\^[^\]]+\]:/gm, ' ');
+  const words = text.match(/[\p{L}\p{N}]+/gu)?.length ?? 0;
+  return Math.max(1, Math.round(words / 200));
+}
