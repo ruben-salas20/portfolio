@@ -22,8 +22,8 @@ export const GET: APIRoute = async ({ site }) => {
   const tr = t('en');
   const base = (site ?? new URL('https://rubensalas.dev')).origin;
 
-  // Fecha de compilación. Sin esto, afirmaciones con caducidad como
-  // "2nd semester" se leen como vigentes para siempre.
+  // Fecha de compilación. Sin esto, afirmaciones con caducidad, como lo
+  // que Rubén está aprendiendo ahora, se leen como vigentes para siempre.
   const lastUpdated = new Date().toISOString().slice(0, 7);
 
   // Un proyecto puede tener repo público, sitio en vivo, ambos o ninguno.

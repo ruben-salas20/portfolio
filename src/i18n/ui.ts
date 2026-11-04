@@ -30,7 +30,7 @@ export const ui = {
     about: {
       title: 'About',
       intro:
-        "Systems Engineering student at Universidad del Quindío (2nd semester), in Armenia, Colombia. I'm learning to build AI agents in Python.",
+        "Systems Engineering student at Universidad del Quindío, in Armenia, Colombia. I'm learning to build AI agents in Python.",
       howIWork:
         "I work by defining the specifications and the process of each project, and I implement it by directing AI agents. I'm constantly developing my directing skills and my understanding of code, to sharpen my judgement and make better decisions. I also enjoy writing code by hand, even though it's becoming less and less efficient, so I do it more as a hobby and out of passion.",
     },
@@ -127,7 +127,7 @@ export const ui = {
     about: {
       title: 'Sobre mí',
       intro:
-        'Estudiante de Ingeniería de Sistemas en la Universidad del Quindío (2.º semestre), en Armenia, Colombia. Estoy aprendiendo a construir agentes de IA con Python.',
+        'Estudiante de Ingeniería de Sistemas en la Universidad del Quindío, en Armenia, Colombia. Estoy aprendiendo a construir agentes de IA con Python.',
       howIWork:
         'Trabajo definiendo las especificaciones y el proceso de cada proyecto, y lo implemento dirigiendo agentes de IA. Desarrollo constantemente mis habilidades de dirección y mi entendimiento del código, para mejorar mi criterio y tomar mejores decisiones. También disfruto escribir código a mano, aunque hoy es cada vez menos eficiente, así que lo hago más por hobby y por pasión.',
     },
