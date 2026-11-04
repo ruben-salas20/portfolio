@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El juego de juntar parejas</title>
+<link rel="stylesheet" href="/articulos/artefactos.css">
+<style>
+  /* Los mismos espacios que en cortar.html: 16 px entre bloques y 6 px
+     dentro de cada uno. */
+  body {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  body > * { margin: 0; }
+  .group {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .text {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+  }
+  .word { display: flex; gap: 2px; }
+  .piece {
+    padding: 2px 8px;
+    border: 1px solid var(--control);
+    border-radius: 4px;
+    font-family: ui-monospace, monospace;
+  }
+  /* La pareja que se va a juntar, en el ámbar de cortar.html. */
+  .piece.pair {
+    border-color: transparent;
+    background: light-dark(#fcd34d, #854d0e);
+  }
+  .piece.new { border-color: var(--fg); font-weight: 600; }
+  .buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+  button:disabled { opacity: 0.5; cursor: default; }
+  .big { line-height: 1.1; }
+  p { margin: 0; font-size: 0.875rem; }
+  strong { font-weight: 600; }
+</style>
+</head>
+<body>
+  <div class="group">
+    <p class="muted">Imagina que este es todo el texto que existe:</p>
+    <div id="text" class="text"></div>
+  </div>
+  <p id="status"></p>
+  <div class="buttons">
+    <button id="merge"></button>
+    <button id="reset">Empezar de nuevo</button>
+  </div>
+  <div class="group">
+    <output id="count" class="big"></output>
+    <p id="vocab" class="muted"></p>
+  </div>
+<script>
+  // Elegido para que en ninguna jugada empaten dos parejas: así no hace
+  // falta una regla de desempate. Tras STEPS jugadas, «gato» es una pieza,
+  // «pato» dos y «pata» tres.
+  const TEXT = ['gato', 'pato', 'gato', 'pata', 'gato', 'pato', 'gato'];
+  const STEPS = 3;
+  let words, merges;
+
+  function reset() {
+    words = TEXT.map((w) => [...w]);
+    merges = [];
+    render();
+  }
+
+  function bestPair() {
+    const counts = new Map();
+    for (const w of words) {
+      for (let i = 0; i < w.length - 1; i++) {
+        const key = `${w[i]}\u0000${w[i + 1]}`;
+        counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+    }
+    let best = null;
+    for (const [key, n] of counts) {
+      if (!best || n > best.n) best = { pair: key.split('\u0000'), n };
+    }
+    return best;
+  }
+
+  // Recorre la palabra de izquierda a derecha y avisa en cada pareja
+  // encontrada (sin solaparlas) y en cada pieza suelta.
+  function walk(w, [a, b], onPair, onPiece) {
+    for (let i = 0; i < w.length; i++) {
+      if (w[i] === a && w[i + 1] === b) { onPair(i); i++; } else { onPiece(i); }
+    }
+  }
+
+  function merge() {
+    const best = bestPair();
+    const joined = best.pair.join('');
+    words = words.map((w) => {
+      const out = [];
+      walk(w, best.pair, () => out.push(joined), (i) => out.push(w[i]));
+      return out;
+    });
+    merges.push(joined);
+    render();
+  }
+
+  function tile(text, className) {
+    const s = document.createElement('span');
+    s.className = className;
+    s.textContent = text;
+    return s;
+  }
+
+  function render() {
+    const done = merges.length >= STEPS;
+    const best = done ? null : bestPair();
+    const last = merges.at(-1);
+    const kind = (p) => (p === last ? 'piece new' : 'piece');
+
+    document.getElementById('text').replaceChildren(...words.map((w) => {
+      const el = document.createElement('span');
+      el.className = 'word';
+      if (best) {
+        walk(w, best.pair,
+          (i) => el.append(tile(w[i], 'piece pair'), tile(w[i + 1], 'piece pair')),
+          (i) => el.append(tile(w[i], kind(w[i]))));
+      } else {
+        w.forEach((p) => el.append(tile(p, kind(p))));
+      }
+      return el;
+    }));
+
+    const status = document.getElementById('status');
+    const button = document.getElementById('merge');
+    if (best) {
+      const [a, b] = best.pair;
+      status.innerHTML = 'La pareja que más se repite es <strong></strong> + <strong></strong>: sale <strong></strong> veces.';
+      const parts = status.querySelectorAll('strong');
+      parts[0].textContent = `«${a}»`;
+      parts[1].textContent = `«${b}»`;
+      parts[2].textContent = best.n;
+      button.textContent = `Juntar «${a}» + «${b}»`;
+      button.disabled = false;
+    } else {
+      status.textContent = '«gato», que sale mucho, ya es una sola pieza. «pato» quedó en dos y «pata», que sale una vez, en tres.';
+      button.textContent = 'Listo';
+      button.disabled = true;
+    }
+
+    const total = words.reduce((n, w) => n + w.length, 0);
+    document.getElementById('count').textContent = `${total} piezas`;
+    document.getElementById('vocab').textContent = merges.length
+      ? `Piezas nuevas: ${merges.map((m) => `«${m}»`).join(', ')}`
+      : 'Por ahora, cada letra es una pieza.';
+  }
+
+  document.getElementById('merge').addEventListener('click', merge);
+  document.getElementById('reset').addEventListener('click', reset);
+  reset();
+</script>
+</body>
+</html>
