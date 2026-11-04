@@ -6,6 +6,8 @@ import sitemap from '@astrojs/sitemap';
 import { satteri } from '@astrojs/markdown-satteri';
 import { youtube } from './src/plugins/youtube.mjs';
 import { artifact } from './src/plugins/artifact.mjs';
+import { footnotes } from './src/plugins/footnotes.mjs';
+import { externalLinks } from './src/plugins/external-links.mjs';
 
 // La integración del sitemap solo recibe URLs, no los artículos: para
 // saber si una página de artículo es de respaldo, mira si existe el archivo
@@ -49,8 +51,9 @@ export default defineConfig({
 
   markdown: {
     // Un enlace de YouTube o a un artefacto HTML, solo en su párrafo, pasa
-    // a ser una portada.
-    processor: satteri({ hastPlugins: [youtube, artifact] }),
+    // a ser una portada. Las notas al pie salen en el idioma del artículo y
+    // los enlaces externos abren en otra pestaña.
+    processor: satteri({ hastPlugins: [youtube, artifact, footnotes, externalLinks] }),
     // Bloques de código de los artículos con un tema claro y otro oscuro.
     // Sin `defaultColor: false`, Shiki fija los colores de uno solo y en el
     // otro modo el código no se lee; global.css elige el del tema activo.
