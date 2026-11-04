@@ -16,6 +16,11 @@
   --fg: light-dark(#1a1a1a, #e8e8e8);
   --muted: light-dark(#6b6b6b, #9a9a9a);
   --rule: light-dark(#e5e5e5, #2a2a2a);
+  /* Borde de los artefactos y sus controles (igual en artefactos.css).
+     --rule casi no se ve (1,26:1 en claro y 1,4:1 en oscuro); este da
+     3,03:1 y 3,1:1, sobre el mínimo de WCAG (3:1) para el borde de un
+     control. */
+  --control: light-dark(#949494, #626262);
   --available: light-dark(#15803d, #4ade80);
   color-scheme: light dark;
 }
@@ -55,6 +60,32 @@ a {
 a:focus-visible {
   outline: 2px solid currentColor;
   outline-offset: 2px;
+}
+
+/* ---- Barras de desplazamiento: finas y en el gris apagado ----
+   `scrollbar-color` se hereda y `scrollbar-width` no, por eso el `*`.
+   Safari no entiende esas dos y usa los ::-webkit-scrollbar; Chrome los
+   ignora cuando hay `scrollbar-color`. */
+:root {
+  scrollbar-color: var(--muted) transparent;
+}
+
+* {
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: var(--muted);
 }
 
 /* ---- Cabecera: nombre a la izquierda, enlaces a la derecha ---- */
@@ -543,7 +574,10 @@ a:focus-visible {
   overflow-x: auto;
 }
 
+/* Todo el ancho de la columna, aunque la tabla tenga poco texto. Una tabla
+   más ancha que la columna sigue desplazándose dentro de .table-scroll. */
 .prose table {
+  width: 100%;
   border-collapse: collapse;
   font-size: 0.875rem;
   font-variant-numeric: tabular-nums;
@@ -828,7 +862,7 @@ a.youtube:hover .youtube-title {
   display: block;
   height: 200px;
   overflow: hidden;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--control);
   border-radius: 4px;
   background: radial-gradient(color-mix(in srgb, var(--muted) 40%, transparent) 1px, transparent 1px) 0 0 / 16px 16px;
 }
@@ -854,7 +888,7 @@ a.youtube:hover .youtube-title {
   width: 56px;
   height: 56px;
   translate: -50% -50%;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--control);
   border-radius: 50%;
   background: var(--bg);
   color: var(--fg);

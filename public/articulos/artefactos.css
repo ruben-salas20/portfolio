@@ -15,6 +15,10 @@
   --fg: light-dark(#1a1a1a, #e8e8e8);
   --muted: light-dark(#6b6b6b, #9a9a9a);
   --rule: light-dark(#e5e5e5, #2a2a2a);
+  /* Borde de los controles. --rule casi no se ve (1,26:1 en claro y 1,4:1
+     en oscuro); este da 3,03:1 y 3,1:1, sobre el mínimo de WCAG (3:1) para
+     el borde de un control. */
+  --control: light-dark(#949494, #626262);
   color-scheme: light dark;
 }
 
@@ -64,7 +68,7 @@ input[type="range"] {
 /* ---- Botón ---- */
 button {
   padding: 4px 12px;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--control);
   border-radius: 4px;
   background: var(--bg);
   color: var(--fg);
@@ -90,7 +94,7 @@ select {
   min-width: 12rem;
   max-width: 100%;
   padding: 4px 32px 4px 10px;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--control);
   border-radius: 4px;
   background-color: var(--bg);
   background-image:
@@ -133,7 +137,7 @@ select:hover {
 .options span {
   display: block;
   padding: 4px 10px;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--control);
   border-radius: 4px;
   cursor: pointer;
 }
